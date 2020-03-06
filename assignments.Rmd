@@ -1,0 +1,51 @@
+---
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+# Labs
+#### 16% of your overall grade
+#### 40 points total; 10 points each
+
+You are encouraged to work in partners or teams of up to 4 people on labs.
+However, should you choose to work in teams, labs **must** be submitted as a
+shared GitHub repository. I will evaluate the commits made by team members
+before assigning final points. Each team member should upload a link to the
+corresponding repo on canvas.
+
+|**Lab** | **Topic**                           | **Assigned** | **Due** | 
+|:------:| :-----------------------------------| :-----------:| :------:| 
+| 1      | Iterations with Base R              | 4/8/20       | 4/15/20 |
+| 2      | Iterations with {purrr}             | 4/15/20      | 4/22/20 |
+| 3      | Writing Functions 1                 | 5/6/20       | 5/13/20 |
+| 4      | Writing Functions 2                 | 5/20/20      | 5/27/20 |
+
+# Midterm
+#### 20% of your overall grade
+#### 50 points total
+
+**Assigned**: 4/22/20
+**Due**: 5/4/20
+
+Take-home Portion
+
+More details will be available later in the term, but a midterm will be 
+assigned, which will likely ask you to rewrite code to accomplish a similar 
+task using more efficient and/or readable approaches.
+
+# Final Project
+#### 60% of your overall grade
+#### 150 points total
+
+|**Component**     | **Points**| **Due** | 
+|:-----------------|:----------|:--------| 
+| Groups Finalized | 0         |  4/10/19|
+| [Outline](https://uo-datasci-specialization.github.io/c3-fun_program_r/site-syllabus.html#outline_(10_points;_5%))  | 10 | 5/1/19 | 
+| [Draft](https://uo-datasci-specialization.github.io/c3-fun_program_r/site-syllabus.html#draft_data_preparation_script_(20_points)) |  20 | 5/27/19 | 
+| [Peer review](https://uo-datasci-specialization.github.io/c3-fun_program_r/site-syllabus.html#peer_review_of_data_preparation_script_(20_points)) | 20 | 6/3/19 | 
+| [Product](https://uo-datasci-specialization.github.io/c3-fun_program_r/site-syllabus.html#final_product_grading_(100_points)) |  100 | 6/12/19 (11:59 pm) | 
+
+
+
