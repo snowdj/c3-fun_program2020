@@ -1,4 +1,5 @@
 ---
+title: Assignments
 output:
   html_document:
     toc: true
@@ -26,14 +27,16 @@ corresponding repo on canvas.
 #### 20% of your overall grade
 #### 50 points total
 
-**Assigned**: 4/22/20
+**Assigned**: 4/20/20 & 4/22/20
 **Due**: 5/4/20
-
-Take-home Portion
-
-More details will be available later in the term, but a midterm will be 
-assigned, which will likely ask you to rewrite code to accomplish a similar 
-task using more efficient and/or readable approaches.
+Two parts: 
+* Small in-class worksheet to demonstrate knowledge (4/22/20; 10 points)
+  + Identifying bugs in code
+  + Multiple choice/fill-in the blank questions
+  + Free response
+  
+* Take-home portion to demonstrate ability to write the correct code (assigned 4/20/20; 50 points)
+  + Write loops to solve problems
 
 # Final Project
 #### 60% of your overall grade
@@ -42,10 +45,10 @@ task using more efficient and/or readable approaches.
 |**Component**     | **Points**| **Due** | 
 |:-----------------|:----------|:--------| 
 | Groups Finalized | 0         |  4/10/19|
-| [Outline](https://uo-datasci-specialization.github.io/c3-fun_program_r/site-syllabus.html#outline_(10_points;_5%))  | 10 | 5/1/19 | 
-| [Draft](https://uo-datasci-specialization.github.io/c3-fun_program_r/site-syllabus.html#draft_data_preparation_script_(20_points)) |  20 | 5/27/19 | 
-| [Peer review](https://uo-datasci-specialization.github.io/c3-fun_program_r/site-syllabus.html#peer_review_of_data_preparation_script_(20_points)) | 20 | 6/3/19 | 
-| [Product](https://uo-datasci-specialization.github.io/c3-fun_program_r/site-syllabus.html#final_product_grading_(100_points)) |  100 | 6/12/19 (11:59 pm) | 
+| [Outline](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#outline_(10_points;_5%))  | 10 | 5/1/19 | 
+| [Draft](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#draft_data_preparation_script_(20_points)) |  20 | 5/27/19 | 
+| [Peer review](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#peer_review_of_data_preparation_script_(20_points)) | 20 | 6/3/19 | 
+| [Product](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#final_product_grading_(100_points)) |  100 | 6/12/19 (11:59 pm) | 
 
 
 
