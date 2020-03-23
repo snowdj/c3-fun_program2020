@@ -24,12 +24,15 @@ corresponding repo on canvas.
 | 4      | Writing Functions 2                 | 5/20/20      | 5/27/20 |
 
 # Midterm
-#### 20% of your overall grade
-#### 50 points total
+#### 24% of your overall grade
+#### 60 points total
 
 **Assigned**: 4/20/20 & 4/22/20
+
 **Due**: 5/4/20
+
 Two parts: 
+
 * Small in-class worksheet to demonstrate knowledge (4/22/20; 10 points)
   + Identifying bugs in code
   + Multiple choice/fill-in the blank questions
@@ -44,11 +47,11 @@ Two parts:
 
 |**Component**     | **Points**| **Due** | 
 |:-----------------|:----------|:--------| 
-| Groups Finalized | 0         |  4/10/19|
-| [Outline](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#outline_(10_points;_5%))  | 10 | 5/1/19 | 
-| [Draft](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#draft_data_preparation_script_(20_points)) |  20 | 5/27/19 | 
-| [Peer review](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#peer_review_of_data_preparation_script_(20_points)) | 20 | 6/3/19 | 
-| [Product](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#final_product_grading_(100_points)) |  100 | 6/12/19 (11:59 pm) | 
+| Groups Finalized | 0         |  4/8/20|
+| [Outline](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#outline_(10_points;_5%))  | 10 | 4/29/20 | 
+| [Draft](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#draft_data_preparation_script_(20_points)) |  20 | 5/25/20 | 
+| [Peer review](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#peer_review_of_data_preparation_script_(20_points)) | 20 | 6/1/20 | 
+| [Product](https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#final_product_grading_(100_points)) |  100 | 6/10/20 (11:59 pm) | 
 
 
 
