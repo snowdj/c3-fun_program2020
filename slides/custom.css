@@ -1,6 +1,35 @@
 .ital {font-style: italic;}
 
-.blue { color: #0074C4;}
+.b {
+  color: #4f8dde;
+}
+
+.r {
+  color: #de4fbf;
+}
+
+.g {
+  color: #98a2ae;
+}
+
+.small {
+  font-size: 0.75rem;
+}
+
+.remark-code-line-highlighted { 
+  background-color: #3bac39; 
+  color: #fff; 
+  font-weight: 500; 
+}
+
+.remark-code-line-highlighted .hljs-string {
+  color: #FFF200 !important;
+}
+
+.remark-code-line-highlighted .hljs-literal {
+  color: #f486cb !important;
+  font-weight: 400;
+}
 
 .bolder { font-weight: 900; }
 
