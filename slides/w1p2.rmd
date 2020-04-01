@@ -778,36 +778,6 @@ str(m)
 ```
 
 ---
-# Probably out of time but...
-
-### Remaining time challenge
-
-```{r lm2}
-set.seed(123)
-m <- lm(mpg ~ hp, mtcars)
-
-l <- list(a = list(m = matrix(1:12, ncol = 3),
-              	 v = 1:7),
-		  b = data.frame(student = 1:15,
-			             score = rnorm(15, 100, 10)))
-```
-
-.pull-left[
-* From the model results:
-	+ Extract the qr tolerance
-	+ Extract the term labels 
-]
-
-.pull-right[
-* From the list
-	+ Extract `m`
-	+ Extract the third column of `m`. Maintain the matrix structure
-	+ Extract the score for student 7?
-]
-
-.footnote[Note - this is meant to be very challenging. Don't worry if you struggle.]
-
----
 class: inverse center middle
 # Next time
 ### Loops with base R
