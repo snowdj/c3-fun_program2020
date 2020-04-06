@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Intro to iteration with Base R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Daniel Anderson" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/uo.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/uo-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Intro to iteration with Base R
+### Daniel Anderson
+### Week 2, Class 1
+
+---
+
+
+
+
+# Agenda
+* For loops 
+* Apply family of loops
+    + `lapply()`
+    + `sapply()`
+    + `vapply()`
+
+--
+Note - we won't get to `apply` or `tapply`, but the former in particular is probably worth investigating.
+
+---
+# Learning objectives
+* Understand the basics of what it means to loop through a vector
+
+* Begin to recognize use cases
+
+* Be able to apply basic `for` loops and write their equivalents with `lapply`.
+
+---
+# Basic overview: `for` loops
+
+![](img/for-loops.png)
+
+--
+
+
+```r
+a &lt;- letters[1:26]
+a
+```
+
+```
+##  [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s"
+## [20] "t" "u" "v" "w" "x" "y" "z"
+```
+
+--
+
+.pull-left[
+
+```r
+for(i in 1:5){
+	print(a[i])
+}
+```
+
+```
+## [1] "a"
+## [1] "b"
+## [1] "c"
+## [1] "d"
+## [1] "e"
+```
+]
+
+--
+.pull-right[
+Note these are five different character scalars (atomic vectors of length one).
+It is NOT a single vector.
+]
+
+---
+# Another basic example
+### Simulate tossing a coin, record results
+
+--
+* For a single toss
+
+
+```r
+sample(c("Heads", "Tails"), 1)
+```
+
+```
+## [1] "Heads"
+```
+
+--
+* For multiple tosses, first allocate a vector with `length` equal to the number of iterations
+
+
+
+```r
+result &lt;- rep(NA, 10)
+result
+```
+
+```
+##  [1] NA NA NA NA NA NA NA NA NA NA
+```
+
+---
+* Next, run the trial `\(n\)` times, storing the result in your pre-allocated vector.
+
+
+```r
+for(i in seq_along(result)) {
+	result[i] &lt;- sample(c("Heads", "Tails"), 1)
+}
+result
+```
+
+```
+##  [1] "Heads" "Tails" "Tails" "Heads" "Heads" "Tails" "Heads" "Tails" "Heads"
+## [10] "Heads"
+```
+
+---
+# Growing vectors
+
+* **Always** pre-allocate a vector for storage before running a `for` loop. 
+
+
+--
+* Contrary to some opinions you may see out there, `for` loops are not actually slower than `lapply`, etc., provided the `for` loop is written well
+
+
+--
+* This primarily means .b[not] growing a vector
+
+---
+# Example
+
+```r
+library(tictoc)
+
+set.seed(1)
+tic()
+not_allocated &lt;- sample(c("Heads", "Tails"), 1)
+for(i in seq_len(1e5 - 1)) {
+	not_allocated &lt;- c(not_allocated, sample(c("Heads", "Tails"), 1))
+  
+}
+toc()
+```
+
+```
+## 28.036 sec elapsed
+```
+
+```r
+set.seed(1)
+tic()
+allocated &lt;- rep(NA, 1e5)
+for(i in seq_len(1e5)) {
+	allocated[i] &lt;- sample(c("Heads", "Tails"), 1)
+}
+toc()
+```
+
+```
+## 0.412 sec elapsed
+```
+
+---
+# Result
+* The result is the same, regardless of the approach (notice I forced the random number generator to start at the same place in both samples)
+
+
+```r
+identical(not_allocated, allocated)
+```
+
+```
+## [1] TRUE
+```
+
+* Speed is obviously not identical
+
+
+---
+# You try
+
+Base R comes with `letters` and `LETTERS`
+* Make an alphabet of upper/lower case. For example, create "Aa" `paste0(LETTERS[1], letters[1])`
+
+* Write a `for` loop for all letters
+
+---
+# Answer
+
+
+```r
+alphabet &lt;- rep(NA, length(letters))
+
+for(i in seq_along(alphabet)) {
+	alphabet[i] &lt;- paste0(LETTERS[i], letters[i])
+}
+alphabet
+```
+
+```
+##  [1] "Aa" "Bb" "Cc" "Dd" "Ee" "Ff" "Gg" "Hh" "Ii" "Jj" "Kk" "Ll" "Mm" "Nn" "Oo"
+## [16] "Pp" "Qq" "Rr" "Ss" "Tt" "Uu" "Vv" "Ww" "Xx" "Yy" "Zz"
+```
+
+---
+# Quick style note
+* Why am I always using `seq_along`?
+
+--
+* When writing functions, it's safer to use `seq_*` because you can't always be guaranteed of the input
+
+
+```r
+x &lt;- data.frame()
+1:length(x)
+```
+
+```
+## [1] 1 0
+```
+
+```r
+seq_along(x)
+```
+
+```
+## integer(0)
+```
+
+---
+# Running the loop
+
+
+```r
+for(i in 1:length(x)) {
+	print(letters[i])
+}
+```
+
+```
+## [1] "a"
+## character(0)
+```
+
+```r
+for(i in seq_along(x)) {
+	print(letters[i])
+}
+```
+
+* The first  may return unhelpful error messages or unexpected output, while the latter simply won't run, which is generally easier to diagnose.
+
+
+--
+* Even better, if you're using a loop in a function, you should probably have a condition that checks the input before running it
+
+---
+# Another example
+* Say we wanted to simulate 100 cases from random normal data, where we varied the standard deviation in increments of 0.2, ranging from 1 to 5
+
+
+--
+* First, specify a vector standard deviations
+
+
+```r
+increments &lt;- seq(1, 5, by = 0.2)
+```
+
+--
+* Next, allocate a vector. There are many ways I could store this result (data frame, matrix, list). I'll do it in a list.
+
+
+```r
+simulated &lt;- vector("list", length(increments))
+str(simulated)
+```
+
+```
+## List of 21
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+##  $ : NULL
+```
+
+---
+# Write `for` loop
+
+
+```r
+for(i in seq_along(simulated)) {
+	simulated[[i]] &lt;- rnorm(100, 0, increments[i]) # note use of `[[`
+}
+str(simulated)
+```
+
+```
+## List of 21
+##  $ : num [1:100] 0.526 -0.488 1.138 1.215 -0.425 ...
+##  $ : num [1:100] -2.387 2.88 -1.083 -0.792 -1.722 ...
+##  $ : num [1:100] 1.096 0.488 1.77 -2.129 -2.504 ...
+##  $ : num [1:100] -0.873 0.464 -0.911 1.469 -0.207 ...
+##  $ : num [1:100] 1.087 -0.363 -0.041 0.313 -4.339 ...
+##  $ : num [1:100] -0.086 3.77 1.365 -0.301 0.181 ...
+##  $ : num [1:100] 2.106 -2.533 1.264 -0.685 1.647 ...
+##  $ : num [1:100] -2.66 2.81 -1.45 -1.71 -2.43 ...
+##  $ : num [1:100] -4.808 4.387 2.268 0.712 0.458 ...
+##  $ : num [1:100] -2.2601 0.6798 0.2835 0.0796 0.8568 ...
+##  $ : num [1:100] 1.142 0.198 -4.268 -4.195 3.53 ...
+##  $ : num [1:100] 1.36 -2.48 -1.44 3.52 -6.04 ...
+##  $ : num [1:100] 0.9843 0.0286 6.8353 0.306 -11.3752 ...
+##  $ : num [1:100] -1.31 0.731 -2.888 -5.283 4.79 ...
+##  $ : num [1:100] 1.787 -5.524 0.728 -1.48 0.775 ...
+##  $ : num [1:100] -0.468 -7.216 -4.278 0.522 -0.784 ...
+##  $ : num [1:100] -10.036 -0.57 4.762 -0.229 1.634 ...
+##  $ : num [1:100] -1.864 3.307 5.152 6.773 0.361 ...
+##  $ : num [1:100] 4.369 5.379 -5.603 0.891 1.207 ...
+##  $ : num [1:100] -9.18 1.02 1.47 -4.35 4.27 ...
+##  $ : num [1:100] 3.597 8.116 6.309 2.229 0.428 ...
+```
+
+---
+# List/data frame
+* Remember, if all the vectors of our list are the same length, it can be transformed into a data frame.
+
+* First, let's provide meaningful names
+
+
+```r
+names(simulated) &lt;- paste0("sd_", increments)
+sim_d &lt;- data.frame(simulated)
+head(sim_d)
+```
+
+```
+##         sd_1     sd_1.2     sd_1.4     sd_1.6      sd_1.8        sd_2
+## 1  0.5258908 -2.3873130  1.0961069 -0.8730421  1.08667357 -0.08599321
+## 2 -0.4875444  2.8798469  0.4882225  0.4641221 -0.36318687  3.77025309
+## 3  1.1382508 -1.0825756  1.7704895 -0.9106457 -0.04103216  1.36549458
+## 4  1.2151344 -0.7919963 -2.1289891  1.4693974  0.31305978 -0.30101182
+## 5 -0.4248307 -1.7219648 -2.5036642 -0.2066456 -4.33921424  0.18097826
+## 6 -1.4508403 -1.3647772  2.4902680 -3.0258191  3.84883329 -4.89857070
+##       sd_2.2     sd_2.4     sd_2.6      sd_2.8       sd_3    sd_3.2
+## 1  2.1059037 -2.6632801 -4.8081303 -2.26008043  1.1419761  1.363778
+## 2 -2.5331554  2.8135597  4.3871383  0.67977714  0.1979198 -2.478426
+## 3  1.2641686 -1.4489704  2.2681508  0.28349963 -4.2684292 -1.437570
+## 4 -0.6851658 -1.7090189  0.7120512  0.07955778 -4.1953347  3.519224
+## 5  1.6465592 -2.4299403  0.4584426  0.85682207  3.5304385 -6.040620
+## 6 -0.4267777  0.6755309  1.7790071 -0.53770367 -0.1032104 -4.851731
+##         sd_3.4     sd_3.6     sd_3.8       sd_4      sd_4.2     sd_4.4
+## 1   0.98428370 -1.3101339  1.7873998 -0.4684115 -10.0362286 -1.8640709
+## 2   0.02856227  0.7309316 -5.5239581 -7.2159304  -0.5699879  3.3073222
+## 3   6.83529903 -2.8878962  0.7280404 -4.2783842   4.7621515  5.1518374
+## 4   0.30597522 -5.2826883 -1.4801035  0.5221417  -0.2290986  6.7727220
+## 5 -11.37516902  4.7904523  0.7747688 -0.7838565   1.6338576  0.3611563
+## 6   0.07262532 -6.0845962 -1.0349606 -4.6062888  -5.8501474 -0.2260919
+##      sd_4.6     sd_4.8      sd_5
+## 1  4.368734 -9.1808891  3.596936
+## 2  5.379039  1.0218162  8.116178
+## 3 -5.603463  1.4651228  6.309367
+## 4  0.891231 -4.3490750  2.229073
+## 5  1.207220  4.2746611  0.427670
+## 6 -7.449037  0.5022423 -5.239057
+```
+
+---
+# tidyverse
+* One of the *best* things about the tidyverse is that it often does the looping for you
+
+.pull-left[
+
+```r
+library(tidyverse)
+pd &lt;- sim_d %&gt;%
+	pivot_longer(everything(),
+	             names_to = "sd", 
+	             values_to = "sim",
+	             names_prefix = "sd_",
+	             names_ptypes = list(sd = factor())) 
+
+ggplot(pd, aes(sim)) +
+ geom_density(aes(color = sd)) +
+ guides(color = "none") 
+```
+]
+
+
+.pull-right[
+![](w2p1_files/figure-html/plot-eval-1.png)&lt;!-- --&gt;
+]
+
+---
+# Base R Method
+
+* Calculate all the densities
+
+
+```r
+densities &lt;- vector("list", length(sim_d))
+for(i in seq_along(densities)) {
+	densities[[i]] &lt;- density(sim_d[ ,i])
+}
+str(densities)
+```
+
+```
+## List of 21
+##  $ :List of 7
+##   ..$ x        : num [1:512] -3.42 -3.41 -3.39 -3.38 -3.37 ...
+##   ..$ y        : num [1:512] 0.000251 0.000283 0.000319 0.000359 0.000402 ...
+##   ..$ bw       : num 0.325
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -4.03 -4.01 -4 -3.98 -3.96 ...
+##   ..$ y        : num [1:512] 0.000117 0.000132 0.000149 0.000168 0.000188 ...
+##   ..$ bw       : num 0.39
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -5.63 -5.61 -5.59 -5.57 -5.55 ...
+##   ..$ y        : num [1:512] 0.000109 0.000123 0.000138 0.000156 0.000174 ...
+##   ..$ bw       : num 0.513
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -5.34 -5.32 -5.3 -5.28 -5.26 ...
+##   ..$ y        : num [1:512] 9.52e-05 1.06e-04 1.19e-04 1.32e-04 1.47e-04 ...
+##   ..$ bw       : num 0.549
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -6.23 -6.2 -6.18 -6.15 -6.13 ...
+##   ..$ y        : num [1:512] 7.18e-05 8.12e-05 9.19e-05 1.04e-04 1.16e-04 ...
+##   ..$ bw       : num 0.63
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -7.01 -6.98 -6.95 -6.92 -6.89 ...
+##   ..$ y        : num [1:512] 6.69e-05 7.58e-05 8.56e-05 9.63e-05 1.09e-04 ...
+##   ..$ bw       : num 0.702
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -8.36 -8.33 -8.29 -8.26 -8.23 ...
+##   ..$ y        : num [1:512] 8.79e-05 9.95e-05 1.12e-04 1.26e-04 1.42e-04 ...
+##   ..$ bw       : num 0.788
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -10.3 -10.2 -10.2 -10.2 -10.1 ...
+##   ..$ y        : num [1:512] 5.26e-05 6.02e-05 6.89e-05 7.86e-05 8.94e-05 ...
+##   ..$ bw       : num 0.853
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -8.04 -8.01 -7.97 -7.94 -7.91 ...
+##   ..$ y        : num [1:512] 0.000135 0.000152 0.000171 0.000192 0.000215 ...
+##   ..$ bw       : num 0.884
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -9.11 -9.07 -9.03 -8.99 -8.95 ...
+##   ..$ y        : num [1:512] 4.95e-05 5.53e-05 6.18e-05 6.91e-05 7.71e-05 ...
+##   ..$ bw       : num 1.08
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -10.8 -10.8 -10.7 -10.7 -10.6 ...
+##   ..$ y        : num [1:512] 4.57e-05 5.16e-05 5.84e-05 6.59e-05 7.41e-05 ...
+##   ..$ bw       : num 0.997
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -12.8 -12.8 -12.7 -12.7 -12.6 ...
+##   ..$ y        : num [1:512] 3.61e-05 4.06e-05 4.56e-05 5.14e-05 5.76e-05 ...
+##   ..$ bw       : num 1.25
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -14.6 -14.5 -14.5 -14.4 -14.4 ...
+##   ..$ y        : num [1:512] 4.21e-05 4.84e-05 5.60e-05 6.44e-05 7.38e-05 ...
+##   ..$ bw       : num 1.07
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -9.83 -9.78 -9.73 -9.68 -9.63 ...
+##   ..$ y        : num [1:512] 0.000125 0.000143 0.000163 0.000185 0.000211 ...
+##   ..$ bw       : num 1.17
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -11.7 -11.6 -11.6 -11.5 -11.5 ...
+##   ..$ y        : num [1:512] 4.81e-05 5.39e-05 6.02e-05 6.71e-05 7.51e-05 ...
+##   ..$ bw       : num 1.32
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -13.6 -13.6 -13.5 -13.5 -13.4 ...
+##   ..$ y        : num [1:512] 7.38e-05 8.38e-05 9.49e-05 1.07e-04 1.21e-04 ...
+##   ..$ bw       : num 1.22
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -13.7 -13.7 -13.6 -13.6 -13.5 ...
+##   ..$ y        : num [1:512] 5.85e-05 6.61e-05 7.50e-05 8.48e-05 9.55e-05 ...
+##   ..$ bw       : num 1.23
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -14.8 -14.7 -14.7 -14.6 -14.6 ...
+##   ..$ y        : num [1:512] 3.58e-05 4.07e-05 4.60e-05 5.20e-05 5.88e-05 ...
+##   ..$ bw       : num 1.34
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -19.4 -19.4 -19.3 -19.2 -19.2 ...
+##   ..$ y        : num [1:512] 2.68e-05 3.00e-05 3.37e-05 3.78e-05 4.23e-05 ...
+##   ..$ bw       : num 1.75
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -15.8 -15.7 -15.6 -15.6 -15.5 ...
+##   ..$ y        : num [1:512] 3.20e-05 3.61e-05 4.06e-05 4.57e-05 5.13e-05 ...
+##   ..$ bw       : num 1.88
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+##  $ :List of 7
+##   ..$ x        : num [1:512] -14.4 -14.4 -14.3 -14.3 -14.2 ...
+##   ..$ y        : num [1:512] 4.12e-05 4.77e-05 5.50e-05 6.32e-05 7.25e-05 ...
+##   ..$ bw       : num 1.34
+##   ..$ n        : int 100
+##   ..$ call     : language density.default(x = sim_d[, i])
+##   ..$ data.name: chr "sim_d[, i]"
+##   ..$ has.na   : logi FALSE
+##   ..- attr(*, "class")= chr "density"
+```
+
+---
+* Next, plot the first density
+
+
+```r
+plot(densities[[1]])
+```
+
+![](w2p1_files/figure-html/first-density-1.png)&lt;!-- --&gt;
+
+---
+* Finally, loop through all the other densities
+
+
+```r
+plot(densities[[1]],xlim = c(-20, 20))
+
+for(i in seq(2, length(densities))) {
+	lines(x = densities[[i]]$x, 
+	      y = densities[[i]]$y)	
+}
+```
+
+![](w2p1_files/figure-html/all-densities-1.png)&lt;!-- --&gt;
+
+---
+# Skipping iterations
+* On the prior slide, I set the index to skip over the first by using `seq(2, length(densities))`
+
+--
+* Alternatively, the loop could have been written like this
+
+
+```r
+plot(densities[[1]],xlim = c(-20, 20))
+
+for(i in seq_along(densities)) {
+	if(i == 1) next
+	lines(x = densities[[i]]$x, 
+	      y = densities[[i]]$y)	
+}
+```
+
+![](w2p1_files/figure-html/loop-skip-1.png)&lt;!-- --&gt;
+
+---
+# Breaking loops
+
+* Similarly, if a condition is met, you may want to break out of the loop
+
+
+```r
+set.seed(1)
+
+rand_unif &lt;- vector("double", 10)
+
+for(i in seq_along(rand_unif)) {
+	rand_unif[i] &lt;- runif(1, 0, 10)
+	if(any(rand_unif &gt; 5)) {
+		break
+	}
+}
+
+rand_unif
+```
+
+```
+##  [1] 2.655087 3.721239 5.728534 0.000000 0.000000 0.000000 0.000000 0.000000
+##  [9] 0.000000 0.000000
+```
+
+---
+class: inverse center middle
+# *apply
+
+---
+# `lapply`
+* One of numerous *functionals* in R
+
+* A functional "takes a function as an input and returns a vector as output" ([adv-r, Chpt 9](https://adv-r.hadley.nz/functionals.html))
+
+--
+
+* `lapply` will **always** return a list
+
+---
+## Revisiting our simulation with `\(n = 10\)`
+
+Our `for` loop version
+
+
+```r
+increments &lt;- seq(1, 5, by = 0.2)
+
+simulated &lt;- vector("list", length(increments))
+
+for(i in seq_along(simulated)) {
+	simulated[[i]] &lt;- rnorm(10, 0, increments[i]) # note use of `[[`
+}
+
+simulated
+```
+
+```
+## [[1]]
+##  [1]  1.329799263  1.272429321  0.414641434 -1.539950042 -0.928567035
+##  [6] -0.294720447 -0.005767173  2.404653389  0.763593461 -0.799009249
+## 
+## [[2]]
+##  [1] -1.3771884 -0.3473539 -0.3590581 -0.4938130  0.3026681 -1.0703054
+##  [7]  0.5228200 -1.4850461 -0.2691215  0.4528748
+## 
+## [[3]]
+##  [1]  0.18667091  1.12586531 -0.07994948  0.70505116  1.52007711 -0.96733538
+##  [7] -1.79843910  0.06541664 -0.32998918 -0.76004356
+## 
+## [[4]]
+##  [1] -0.6932965 -1.0391546  1.1628012  1.8430588  1.5874566 -0.6872210
+##  [7]  1.9812866 -0.4469541  2.8126449  0.8971937
+## 
+## [[5]]
+##  [1] -0.8150112 -1.4976779 -2.0998270 -1.9180630 -2.8148077  2.0817666
+##  [7]  1.4976848 -0.4091916  0.4790473 -0.6780649
+## 
+## [[6]]
+##  [1]  4.88272926 -1.59067823 -0.10975495  0.50028265  1.23648659 -0.34524701
+##  [7] -4.44780055 -2.52722877  0.71745779 -0.02209096
+## 
+## [[7]]
+##  [1] -2.06942816 -0.25481571 -1.79293116  0.53297966 -3.13521647  0.80507047
+##  [7]  0.54650783  0.14363400  0.04214406  0.56614443
+## 
+## [[8]]
+##  [1] -1.5576242 -0.2860050  1.5939257  2.6423258  0.3450516 -0.2826086
+##  [7] -2.1889641 -3.4502070 -1.9130149  3.0097995
+## 
+## [[9]]
+##  [1]  2.0075697 -0.5707406 -1.1045067 -1.0893483  2.5921658 -0.7170229
+##  [7]  3.2656489  1.6813534  3.3782120 -2.2704815
+## 
+## [[10]]
+##  [1]  0.02343869 -2.46644083  1.66952525  0.33520940 -0.79008686  4.07676752
+##  [7]  0.64125485  2.79032300  2.18920572 -2.17497454
+## 
+## [[11]]
+##  [1] -1.8479697  0.1397409 -3.3911573  1.7301563 -3.8422483  4.8763419
+##  [7] -1.5020898  5.0348916 -1.2375597 -2.9168605
+## 
+## [[12]]
+##  [1]  0.08122518  0.08792107 -5.37658471  3.37200276 -3.58271713  1.07397507
+##  [7]  1.58334645  0.44176867 -0.38013448  0.63258964
+## 
+## [[13]]
+##  [1] -3.63355522 -2.73092494 -3.78680146  5.37231172  5.09258379  0.89299456
+##  [7] -4.19186408 -0.01266001  5.13968576 -1.61737417
+## 
+## [[14]]
+##  [1]  2.8724992 -3.5064092  2.4817417 -3.4410208 -4.4341454 -3.4448108
+##  [7] -3.1312183 -3.2784505  2.6685947  0.2466415
+## 
+## [[15]]
+##  [1] -1.230253 -4.128712 -3.860530 -2.917603 -4.254936 -1.703062  1.792598
+##  [8] -4.485865  5.586977 -4.983398
+## 
+## [[16]]
+##  [1] -0.38609969  9.47887963  3.56250591 -1.00873265 -3.46305502  2.33034400
+##  [7] -0.05011739 -1.49941905  1.27154294 -1.95522254
+## 
+## [[17]]
+##  [1] 11.166364  7.057168  3.274253  2.995610 -2.280104  3.720269 -1.464098
+##  [8] -4.233829  7.909367 -3.901679
+## 
+## [[18]]
+##  [1] -1.2944644 -2.7057812 -4.1671335  2.6354907 -6.7039055 -0.9072316
+##  [7] -2.5268998 -6.1167306 -0.3098365 -1.8958699
+## 
+## [[19]]
+##  [1] -2.72423672  4.51313434  2.44908304 -0.41609817  0.71985626 -3.39163378
+##  [7] -0.92616955  5.07001234 -0.07704198  0.74422771
+## 
+## [[20]]
+##  [1]  9.71885467 -3.37773242  4.61180344  8.59432826 -5.10799278  0.08465542
+##  [7] -1.87156142 -2.35599721 -5.01944473 -4.30181407
+## 
+## [[21]]
+##  [1]  6.3469358  2.9692047  3.8781716  7.7868519 -1.8270090  4.0827822
+##  [7] -0.3031739 -2.5068916  4.6303136  0.1846885
+```
+
+---
+# The `lapply` version
+
+
+```r
+sim_l &lt;- lapply(seq(1, 5, by = 0.2), function(stdev) rnorm(10, 0, stdev))
+sim_l
+```
+
+```
+## [[1]]
+##  [1] -1.06620017 -0.23845635  1.49522344  1.17215855 -1.45770721  0.09505623
+##  [7]  0.84766496 -1.62436453  1.40856336 -0.54176036
+## 
+## [[2]]
+##  [1]  0.33439767 -0.23276729  1.89138982 -1.77065716 -0.17352985 -1.14384377
+##  [7]  0.48785128  2.67511464 -1.81739641 -0.07404891
+## 
+## [[3]]
+##  [1] -0.2061791  2.1582303 -1.3745979  0.6952094  2.3757270 -0.3650308
+##  [7] -0.9883000 -0.2256499  0.7018506 -1.4189555
+## 
+## [[4]]
+##  [1]  2.583603577  0.009027176 -4.647838497 -1.771463710  2.476107092
+##  [6] -1.562928561 -0.162405516  0.068240400 -2.554748823  0.785547796
+## 
+## [[5]]
+##  [1]  0.7588861  3.3730270  1.8621258  0.1472586 -0.1485428  1.0909322
+##  [7] -1.5973563  0.1897585  0.6351741  0.9907080
+## 
+## [[6]]
+##  [1] -2.2686619  2.9247031  1.4042334  5.0142223 -3.7800543 -1.1796256
+##  [7] -3.4290046 -0.8419958  0.6202828  3.4051412
+## 
+## [[7]]
+##  [1] -0.9754466 -2.6369136 -0.6762380  1.3663192  0.4001848  2.9004820
+##  [7] -0.6576005 -3.6260878  2.0932966 -2.4488705
+## 
+## [[8]]
+##  [1]  1.4807195  1.2323849  0.8867018  4.1373459 -0.4947470 -3.1540683
+##  [7]  0.1523378 -0.5567459  1.5241448  3.9231463
+## 
+## [[9]]
+##  [1] -4.7016517 -0.5561035  0.1829520  1.4292399 -1.8117412  1.0154715
+##  [7]  0.9916693 -0.0321692 -0.3235310  3.8135359
+## 
+## [[10]]
+##  [1]  1.8870003  5.4779907 -0.7533148 -3.4847443 -1.1079682  0.2727106
+##  [7] -0.6674835 -1.1531183 -4.4162105 -2.2323731
+## 
+## [[11]]
+##  [1] -3.2887103  0.9249262  1.0343854  4.6189443 -0.9885426  2.8451681
+##  [7] -1.4377668 -4.5446604  1.3036100 -1.5586100
+## 
+## [[12]]
+##  [1] -2.6705889 -2.4212723  3.4864112  5.0317853  3.2235660 -0.8741056
+##  [7] -4.1909745  0.7122363  3.5629862  2.6796621
+## 
+## [[13]]
+##  [1]  1.0693570  0.7555414 -2.8682923  1.5089381  0.1897102  0.2311061
+##  [7] -0.6866699 -3.9372519 -2.0153271  2.6046223
+## 
+## [[14]]
+##  [1]  0.14014122  0.05272852 -0.67074108  5.04212698  0.06654805  0.89710564
+##  [7]  0.53719465 -3.46763945 -0.23928039  4.63291935
+## 
+## [[15]]
+##  [1]  1.7408760 -5.5177075  0.2939007  2.1276020 -0.2847970  2.9742513
+##  [7] -0.6561405 -3.9949164  2.7719149  0.9981279
+## 
+## [[16]]
+##  [1]  2.1746314  4.1642412  0.7900246 -6.5183131  0.4841609 -6.5496878
+##  [7] -2.1241724  3.8147192 -6.8826026  0.4252825
+## 
+## [[17]]
+##  [1] -2.5564077 -1.2650273  4.1000506  1.9152364  5.4365139 -4.7594493
+##  [7] -3.6517335 -3.1708752 -0.5444685 -4.2075656
+## 
+## [[18]]
+##  [1] -3.6074204 -4.2880309  2.6589614  2.4146654  4.0323037 11.7108920
+##  [7] -0.7931311  3.0140650 14.3722239  2.4666420
+## 
+## [[19]]
+##  [1] -0.3174796 -4.4732375 -2.5142983 -7.7679847 -7.2329144 -1.8629409
+##  [7]  1.4687175  0.1859673 -1.7940440 -8.3684223
+## 
+## [[20]]
+##  [1]  3.1640674  2.2061840  7.7598064 -8.9097144 -1.3767546  8.4015451
+##  [7]  0.5587853  6.6444152  2.7562604  0.6551559
+## 
+## [[21]]
+##  [1]  4.57107994 -9.00413159 -1.69940320  3.03132286  6.70565155  3.83643644
+##  [7]  0.96862833  5.70283345  0.06932402 -5.52652955
+```
+
+
+---
+# Some more examples
+### Loop through a data frame
+* Remember - a data frame is a list. We can loop through it easily
+
+--
+
+```r
+lapply(iris, is.double)
+```
+
+```
+## $Sepal.Length
+## [1] TRUE
+## 
+## $Sepal.Width
+## [1] TRUE
+## 
+## $Petal.Length
+## [1] TRUE
+## 
+## $Petal.Width
+## [1] TRUE
+## 
+## $Species
+## [1] FALSE
+```
+
+---
+
+```r
+lapply(mtcars, mean)
+```
+
+```
+## $mpg
+## [1] 20.09062
+## 
+## $cyl
+## [1] 6.1875
+## 
+## $disp
+## [1] 230.7219
+## 
+## $hp
+## [1] 146.6875
+## 
+## $drat
+## [1] 3.596563
+## 
+## $wt
+## [1] 3.21725
+## 
+## $qsec
+## [1] 17.84875
+## 
+## $vs
+## [1] 0.4375
+## 
+## $am
+## [1] 0.40625
+## 
+## $gear
+## [1] 3.6875
+## 
+## $carb
+## [1] 2.8125
+```
+
+---
+# Add a condition
+
+```r
+lapply(iris, function(x) {
+	if(is.double(x)) {
+		mean(x)
+	}
+})
+```
+
+```
+## $Sepal.Length
+## [1] 5.843333
+## 
+## $Sepal.Width
+## [1] 3.057333
+## 
+## $Petal.Length
+## [1] 3.758
+## 
+## $Petal.Width
+## [1] 1.199333
+## 
+## $Species
+## NULL
+```
+
+---
+# Passing arguments
+
+
+```r
+head(airquality)
+```
+
+```
+##   Ozone Solar.R Wind Temp Month Day
+## 1    41     190  7.4   67     5   1
+## 2    36     118  8.0   72     5   2
+## 3    12     149 12.6   74     5   3
+## 4    18     313 11.5   62     5   4
+## 5    NA      NA 14.3   56     5   5
+## 6    28      NA 14.9   66     5   6
+```
+
+```r
+lapply(airquality, mean, na.rm = TRUE)
+```
+
+```
+## $Ozone
+## [1] 42.12931
+## 
+## $Solar.R
+## [1] 185.9315
+## 
+## $Wind
+## [1] 9.957516
+## 
+## $Temp
+## [1] 77.88235
+## 
+## $Month
+## [1] 6.993464
+## 
+## $Day
+## [1] 15.80392
+```
+
+---
+# Simulation again
+
+
+```r
+lapply(seq(1, 5, 0.2), rnorm, n = 10, mean = 0)
+```
+
+```
+## [[1]]
+##  [1] -0.02516264 -0.16367334  0.37005975 -0.38082454  0.65295237  2.06134181
+##  [7] -1.79664494  0.58407712 -0.72275312 -0.62916466
+## 
+## [[2]]
+##  [1] -2.1794473 -0.3111469  0.4015587 -1.7126011  2.3263539 -0.9114363
+##  [7] -2.7345314 -0.1368609  2.8222280  1.9155850
+## 
+## [[3]]
+##  [1]  1.7884237  1.1045592  0.6460515 -0.6132968 -2.1109298 -3.1121246
+##  [7] -1.6501414 -2.4958643 -1.3830868  1.0198842
+## 
+## [[4]]
+##  [1] -1.4154959 -2.4615063 -1.6710007 -2.7490179  1.2860121 -2.4028595
+##  [7] -0.2327985  0.9271338  1.9224409  3.0302573
+## 
+## [[5]]
+##  [1] -3.1684074  1.6641842 -1.0017759 -0.3250514  2.6053925 -1.0928366
+##  [7]  1.2228524 -0.1684038 -0.8821553  2.5391869
+## 
+## [[6]]
+##  [1] -0.4491476 -0.4249910  1.3927569  1.8303650 -1.8467486  2.2937465
+##  [7] -1.2717301 -1.7728866 -4.6662734 -0.2909816
+## 
+## [[7]]
+##  [1]  0.6973209 -1.5564340  2.7327422  1.3643348  0.2197867  3.9769477
+##  [7] -3.3053460  0.6284090  1.8605553 -2.1897538
+## 
+## [[8]]
+##  [1] -0.6164499 -0.1340545 -1.0680126  0.1672682 -0.3712121 -1.9950323
+##  [7]  1.8277064 -1.3836166 -1.5032837  1.1552048
+## 
+## [[9]]
+##  [1]  4.40770482 -4.57918836  0.51483384  1.03310766  0.07598629  6.65671081
+##  [7]  3.26853205 -1.38979798 -1.62559131  2.37600659
+## 
+## [[10]]
+##  [1]  2.82015870  2.01401711 -1.69319265  1.50935234 -0.21512648  5.17977477
+##  [7] -2.39374114  0.09138443 -2.87016655 -2.75029741
+## 
+## [[11]]
+##  [1]  0.01230587 -0.70028153 -1.49666466  4.64913889  0.26249075  3.95610339
+##  [7] -2.94367236 -0.73686776 -4.21180151  4.32267944
+## 
+## [[12]]
+##  [1] -3.14035197  4.71758369 -3.17183118 -0.30239150 -9.20045339 -0.78997152
+##  [7]  0.04718235 -6.14108065 -0.92100398 -1.10923983
+## 
+## [[13]]
+##  [1] -6.2546012  3.0552024 -4.1237070 -0.7444784  1.9185117 -1.7864769
+##  [7]  2.5308724  0.4385380  5.0601325 -2.2531186
+## 
+## [[14]]
+##  [1] -4.1783580  1.2915872 -0.7014470 -1.0630152  1.7879055  1.7456860
+##  [7]  0.0676242  2.2851884  2.7159987  3.0009205
+## 
+## [[15]]
+##  [1]  3.6698929  4.9167439 -0.5188939 -1.6725270 -4.6636789 -0.9030817
+##  [7] -3.5220610  1.5626944 -0.7556854 -2.1183086
+## 
+## [[16]]
+##  [1] -3.908628  0.242941 -2.388918 -5.035795 -5.640189  4.405216 -2.708968
+##  [8] -3.048694 -1.166994 -2.300754
+## 
+## [[17]]
+##  [1] -1.8645558 -1.3127959 -2.5326186 -4.5945258  3.0017660 -0.4570115
+##  [7] -6.0639513  3.3857177 -7.3073073 -1.6855453
+## 
+## [[18]]
+##  [1] -1.265363 -4.128993  1.265735 -6.623765  6.684907  1.616601  7.479395
+##  [8]  2.834467 -7.426325  2.849642
+## 
+## [[19]]
+##  [1]  2.064453  4.720990  4.944900  2.108224  2.905299 -2.670145  7.287284
+##  [8] -8.114368 -8.650861 -5.941908
+## 
+## [[20]]
+##  [1]   4.36641814  -5.31722727  -1.84379460   0.39712720  -2.32263588
+##  [6] -10.00675740   5.60441743  -0.36876370   2.54602270   0.02356222
+## 
+## [[21]]
+##  [1] -2.6511571  7.5743333  4.0772982 -7.5326093 -5.7859009  6.5077747
+##  [7] -4.5282039  0.0778174 -7.1400260  3.4398985
+```
+
+
+---
+# Mimic `dplyr::group_by`
+
+
+```r
+by_cyl &lt;- split(mtcars, mtcars$cyl)
+str(by_cyl)
+```
+
+```
+## List of 3
+##  $ 4:'data.frame':	11 obs. of  11 variables:
+##   ..$ mpg : num [1:11] 22.8 24.4 22.8 32.4 30.4 33.9 21.5 27.3 26 30.4 ...
+##   ..$ cyl : num [1:11] 4 4 4 4 4 4 4 4 4 4 ...
+##   ..$ disp: num [1:11] 108 146.7 140.8 78.7 75.7 ...
+##   ..$ hp  : num [1:11] 93 62 95 66 52 65 97 66 91 113 ...
+##   ..$ drat: num [1:11] 3.85 3.69 3.92 4.08 4.93 4.22 3.7 4.08 4.43 3.77 ...
+##   ..$ wt  : num [1:11] 2.32 3.19 3.15 2.2 1.61 ...
+##   ..$ qsec: num [1:11] 18.6 20 22.9 19.5 18.5 ...
+##   ..$ vs  : num [1:11] 1 1 1 1 1 1 1 1 0 1 ...
+##   ..$ am  : num [1:11] 1 0 0 1 1 1 0 1 1 1 ...
+##   ..$ gear: num [1:11] 4 4 4 4 4 4 3 4 5 5 ...
+##   ..$ carb: num [1:11] 1 2 2 1 2 1 1 1 2 2 ...
+##  $ 6:'data.frame':	7 obs. of  11 variables:
+##   ..$ mpg : num [1:7] 21 21 21.4 18.1 19.2 17.8 19.7
+##   ..$ cyl : num [1:7] 6 6 6 6 6 6 6
+##   ..$ disp: num [1:7] 160 160 258 225 168 ...
+##   ..$ hp  : num [1:7] 110 110 110 105 123 123 175
+##   ..$ drat: num [1:7] 3.9 3.9 3.08 2.76 3.92 3.92 3.62
+##   ..$ wt  : num [1:7] 2.62 2.88 3.21 3.46 3.44 ...
+##   ..$ qsec: num [1:7] 16.5 17 19.4 20.2 18.3 ...
+##   ..$ vs  : num [1:7] 0 0 1 1 1 1 0
+##   ..$ am  : num [1:7] 1 1 0 0 0 0 1
+##   ..$ gear: num [1:7] 4 4 3 3 4 4 5
+##   ..$ carb: num [1:7] 4 4 1 1 4 4 6
+##  $ 8:'data.frame':	14 obs. of  11 variables:
+##   ..$ mpg : num [1:14] 18.7 14.3 16.4 17.3 15.2 10.4 10.4 14.7 15.5 15.2 ...
+##   ..$ cyl : num [1:14] 8 8 8 8 8 8 8 8 8 8 ...
+##   ..$ disp: num [1:14] 360 360 276 276 276 ...
+##   ..$ hp  : num [1:14] 175 245 180 180 180 205 215 230 150 150 ...
+##   ..$ drat: num [1:14] 3.15 3.21 3.07 3.07 3.07 2.93 3 3.23 2.76 3.15 ...
+##   ..$ wt  : num [1:14] 3.44 3.57 4.07 3.73 3.78 ...
+##   ..$ qsec: num [1:14] 17 15.8 17.4 17.6 18 ...
+##   ..$ vs  : num [1:14] 0 0 0 0 0 0 0 0 0 0 ...
+##   ..$ am  : num [1:14] 0 0 0 0 0 0 0 0 0 0 ...
+##   ..$ gear: num [1:14] 3 3 3 3 3 3 3 3 3 3 ...
+##   ..$ carb: num [1:14] 2 4 3 3 3 4 4 4 2 2 ...
+```
+
+---
+
+```r
+lapply(by_cyl, function(x) mean(x$mpg))
+```
+
+```
+## $`4`
+## [1] 26.66364
+## 
+## $`6`
+## [1] 19.74286
+## 
+## $`8`
+## [1] 15.1
+```
+
+---
+# But more power
+### Produce separate plots
+
+
+```r
+lapply(by_cyl, function(x) {
+	ggplot(x, aes(disp, mpg)) +
+		geom_point() +
+		geom_smooth()
+})
+```
+
+
+---
+
+```
+## $`4`
+```
+
+![](w2p1_files/figure-html/plots_by_cyl-eval-1.png)&lt;!-- --&gt;
+
+```
+## 
+## $`6`
+```
+
+![](w2p1_files/figure-html/plots_by_cyl-eval-2.png)&lt;!-- --&gt;
+
+```
+## 
+## $`8`
+```
+
+![](w2p1_files/figure-html/plots_by_cyl-eval-3.png)&lt;!-- --&gt;
+
+---
+# Saving
+* You can extend this example further by saving the plot outputs to an object, then looping through that object to save the plots to disk.
+
+
+--
+* Using functionals, this would require parallel iterations, which we'll cover later (need to loop through plots and a file name)
+
+
+--
+* Could extend it fairly easily with a `for` loop
+
+---
+# Saving w/`for` loop
+
+### Save plots to an object (list)
+
+```r
+plots &lt;- lapply(by_cyl, function(x) {
+	ggplot(x, aes(disp, mpg)) +
+		geom_point() +
+		geom_smooth()
+})
+```
+
+--
+### Specify file names/directory
+
+```r
+filenames &lt;- here::here("plots", 
+                        paste0("cyl", names(by_cyl), ".png"))
+filenames
+```
+
+```
+## [1] "/Users/daniel/Teaching/data_sci_specialization/2019-20/c3-fun_program_r/plots/cyl4.png"
+## [2] "/Users/daniel/Teaching/data_sci_specialization/2019-20/c3-fun_program_r/plots/cyl6.png"
+## [3] "/Users/daniel/Teaching/data_sci_specialization/2019-20/c3-fun_program_r/plots/cyl8.png"
+```
+
+---
+# Saving
+
+
+```r
+for(i in seq_along(plots)) {
+	ggsave(filenames[i], # single bracket
+	       plots[[i]], # double bracket
+	       device = "png",
+	       width = 6.5, 
+	       height = 8)
+}
+```
+
+---
+# Equivalent with `lapply`
+
+You can actually use `lapply` just like a for loop if the vector you feed it is just an index
+
+
+```r
+lapply(seq_along(plots), function(i) {
+	ggsave(filenames[i],
+	       plots[[i]], 
+	       device = "png",
+	       width = 6.5, 
+	       height = 8)
+})
+```
+
+* Generally I would not do this - it's somewhat outside of the spirit of functional programming (which I still haven't fully defined, but I will next week)
+
+---
+# Variants of `lapply`
+
+* `sapply`
+
+	+ Will try to .bolder[.b[s]]implify the output, if possible. Otherwise it will return a list.
+
+	+ Fine for interactive work, but I strongly recommend against it if writing a function (difficult to predict the output)
+
+
+--
+* `vapply`
+
+	+ Strict - you specify the output, it throws an error if output doesn't match
+
+	+ Use if writing functions (or just always stick with `lapply`), or consider jumping to `{purrr}` (next week)
+
+---
+# Examples
+### Our simulation
+
+
+```r
+sim_s &lt;- sapply(seq(1, 5, by = 0.2), function(x) rnorm(10, 0, x))
+class(sim_s)
+```
+
+```
+## [1] "matrix"
+```
+
+```r
+dim(sim_s)
+```
+
+```
+## [1] 10 21
+```
+
+```r
+sim_s
+```
+
+```
+##             [,1]         [,2]        [,3]        [,4]       [,5]       [,6]
+##  [1,]  0.5941965  0.779306321  2.74940128 -0.68645388 -2.0738827 -3.6099515
+##  [2,] -0.2703152 -0.769341787  0.98914028  0.81404203 -1.7553302 -0.9681391
+##  [3,]  1.5540761  0.557351725  0.05554497 -2.31502359 -1.2805445 -0.7464236
+##  [4,] -0.5107425 -0.371040537 -0.22192603  1.63122053  0.6694425  0.3381718
+##  [5,] -0.2918427  1.531224851 -0.22716057  1.88567516 -1.6983260 -2.3459672
+##  [6,]  1.1014382 -0.057133464  0.61435068 -0.01641402 -0.4938612 -0.7523935
+##  [7,]  0.4586652  0.036121399  1.09297901  0.42979979  0.2780433  1.5662553
+##  [8,]  0.8519080 -0.004296324 -1.37368787  2.14724620 -2.3195758  1.9823426
+##  [9,]  1.4661999 -2.441487172 -0.19822002 -0.93377031  2.5543842  0.4585689
+## [10,]  0.2438633 -1.191383955 -1.75874853 -1.49920143  2.3826611  0.6737019
+##             [,7]       [,8]        [,9]      [,10]      [,11]      [,12]
+##  [1,] -1.4239104 -0.7457781 -1.72273013  1.3585921 -1.3048822 -0.8204553
+##  [2,] -0.9750547  2.1273360 -5.69496893 -1.8065108 -1.5652625 -0.4433620
+##  [3,]  2.5558539 -3.9404754  0.01002215 -1.2990774  2.9768653  1.7845919
+##  [4,]  0.1431122 -2.3725530  2.24365136  1.5882992 -3.2562672  3.5915081
+##  [5,] -1.5014287 -0.5856082  2.54858073 -2.0255419  2.8794973 -3.1428711
+##  [6,]  3.5955516  0.3745366 -0.75848440  1.2764768 -3.1170316  1.0460978
+##  [7,] -1.2866683  0.2449247 -0.15863504 -3.3542170 -0.4135259  1.4330451
+##  [8,]  2.4858592 -0.6898996  3.93085784 -5.6509055 -0.6441253  3.7879172
+##  [9,]  1.2786423 -0.7036677 -1.67338357  1.7352255  1.7211558 -0.2835741
+## [10,]  0.8344447  1.1267449 -0.34047125 -0.3720009 -5.3293479  3.6703932
+##            [,13]       [,14]      [,15]      [,16]      [,17]      [,18]
+##  [1,]  0.2951627  7.02100003  4.5040992 -6.8330809  3.8422064  6.0686390
+##  [2,] -1.0030171  3.47203464 -0.8350698  4.2104792  1.2332184 -4.0465682
+##  [3,]  1.7419320  3.73825652 -0.2153565  4.4929564 -0.6373022 -2.2197562
+##  [4,]  0.9632664  6.36794505  1.5449451 -1.4183680  0.6925440 -4.9928200
+##  [5,]  1.3074486 -2.05794053 -4.9758338  0.7529554  3.6480252  2.2562014
+##  [6,]  3.4163348 -5.29301840 -2.6854269  3.6952001 -4.5277449  2.3231506
+##  [7,] -0.9722837 -3.99731920  3.9287883  8.6108034 -5.1337943  5.2282882
+##  [8,] -0.8069556  0.91585220  7.4964917 -4.4389574 -2.9880677 -2.0329600
+##  [9,] -0.6924928  0.08404085  2.6125953  4.1180329 -5.9809330  5.4607049
+## [10,]  3.6464048 -9.77733106  2.8053217  5.5086190 -7.0112465  0.6028948
+##            [,19]      [,20]      [,21]
+##  [1,] -5.9783681 -1.4352944 -0.9630513
+##  [2,]  5.2964811 -1.9146782  8.4157697
+##  [3,]  6.9618584 -3.0879232  0.5128692
+##  [4,]  3.6898342  6.3149043 -3.2741766
+##  [5,] -1.9804699 -7.6078458  5.9328760
+##  [6,] -6.1856243 -2.1335828 -6.3618484
+##  [7,]  0.1722335  2.7176788  2.6903229
+##  [8,] -6.1903202  1.3935632  6.1542520
+##  [9,] -8.3444199 -2.9546128 -5.8285348
+## [10,]  3.2385542 -0.2976375  1.6210472
+```
+
+---
+
+```r
+sapply(iris, is.double)
+```
+
+```
+## Sepal.Length  Sepal.Width Petal.Length  Petal.Width      Species 
+##         TRUE         TRUE         TRUE         TRUE        FALSE
+```
+
+--
+* Now that it's a vector we can easily use it for subsetting
+
+---
+
+```r
+head(iris)
+```
+
+```
+##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa
+```
+
+```r
+head( iris[ ,sapply(iris, is.double)] )
+```
+
+```
+##   Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 1          5.1         3.5          1.4         0.2
+## 2          4.9         3.0          1.4         0.2
+## 3          4.7         3.2          1.3         0.2
+## 4          4.6         3.1          1.5         0.2
+## 5          5.0         3.6          1.4         0.2
+## 6          5.4         3.9          1.7         0.4
+```
+
+
+---
+# Challenge
+* Can you make return the opposite? In other words - all those that are *not* double?
+
+--
+
+```r
+head( iris[ ,!sapply(iris, is.double), drop = FALSE] )
+```
+
+```
+##   Species
+## 1  setosa
+## 2  setosa
+## 3  setosa
+## 4  setosa
+## 5  setosa
+## 6  setosa
+```
+
+---
+# `vapply`
+* As you can probably see, simplifying can be *really* helpful for interactive work.
+
+
+--
+.major-emph-green[BUT]
+
+
+--
+* Not ideal for programmatic work - need to be able to reliably predict the output
+
+
+--
+* `vapply` solves this issue.
+
+---
+
+
+```r
+vapply(mtcars, mean, FUN.VALUE = double(1))
+```
+
+```
+##        mpg        cyl       disp         hp       drat         wt       qsec 
+##  20.090625   6.187500 230.721875 146.687500   3.596563   3.217250  17.848750 
+##         vs         am       gear       carb 
+##   0.437500   0.406250   3.687500   2.812500
+```
+
+```r
+vapply(iris, is.double, FUN.VALUE = character(1))
+```
+
+```
+## Error in vapply(iris, is.double, FUN.VALUE = character(1)): values must be type 'character',
+##  but FUN(X[[1]]) result is type 'logical'
+```
+
+```r
+vapply(iris, is.double, FUN.VALUE = logical(1))
+```
+
+```
+## Sepal.Length  Sepal.Width Petal.Length  Petal.Width      Species 
+##         TRUE         TRUE         TRUE         TRUE        FALSE
+```
+
+---
+# Coercion with `vapply`
+
+* If it can coerce the vector without loss of information, it will
+
+
+```r
+vapply(iris, is.double, FUN.VALUE = double(1))
+```
+
+```
+## Sepal.Length  Sepal.Width Petal.Length  Petal.Width      Species 
+##            1            1            1            1            0
+```
+
+
+
+---
+# Count missing data
+
+
+```r
+vapply(airquality, 
+       function(col) {
+         sum(is.na(col))
+         }, 
+       double(1)
+)
+```
+
+```
+##   Ozone Solar.R    Wind    Temp   Month     Day 
+##      37       7       0       0       0       0
+```
+
+---
+# `sapply` alternative
+For interactive work, the code on the previous slide is maybe too much. Could be reduced to
+
+
+```r
+sapply(airquality, function(col) sum(is.na(col)))
+```
+
+```
+##   Ozone Solar.R    Wind    Temp   Month     Day 
+##      37       7       0       0       0       0
+```
+
+---
+# Summary
+* `for` loops are incredibly flexible and there's nothing inherently "wrong" about them
+
+
+--
+	+ Do require more text, and often repetitive text, which can lead to errors/bugs
+
+
+--
+	+ The flexibility can actually be more of a curse than a blessing
+
+
+--
+* The `lapply` family of functions help put the focus on a given function, and what values are being looped through the function
+
+
+--
+	+ `lapply` will always return a list
+
+
+--
+	+ `sapply` will try to simplify, which is problematic for programming, but fine for interactive work
+
+
+--
+	+ `vapply` is strict, and will only return the type specified
+
+---
+class: inverse center middle
+# Next time
+### Lab 1
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "atelier-dune-light",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
