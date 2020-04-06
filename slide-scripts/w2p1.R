@@ -190,7 +190,7 @@ simulated
 
 
 ## ----lapply-sim-----------------------------------------------------------------------------------
-sim_l <- lapply(seq(1, 5, by = 0.2), function(stdev) rnorm(10, 0, stdev))
+sim_l <- lapply(seq(1, 5, by = 0.2), function(sd) rnorm(10, 0, sd))
 sim_l
 
 
@@ -207,6 +207,30 @@ lapply(iris, function(x) {
 	if(is.double(x)) {
 		mean(x)
 	}
+})
+
+
+## ----lapply-conditional2-echo, eval = FALSE-------------------------------------------------------
+## lapply(iris, function(x) {
+## 	if(is.double(x)) {
+## 		return(mean(x))
+## 	}
+## 	else if(is.character(x) |
+## 		        is.factor(x)) {
+##     return(table(x))
+##   }
+## })
+
+
+## ----lapply-conditional2-eval, echo = FALSE-------------------------------------------------------
+lapply(iris, function(x) {
+	if(is.double(x)) {
+		return(mean(x))
+	}
+	else if(is.character(x) | 
+		        is.factor(x)) {
+    return(table(x))
+  }
 })
 
 
@@ -254,6 +278,7 @@ plots <- lapply(by_cyl, function(x) {
 
 
 ## ----filenames------------------------------------------------------------------------------------
+#dir.create(here::here("plots")) # if folder doesn't already exist
 filenames <- here::here("plots", 
                         paste0("cyl", names(by_cyl), ".png"))
 filenames

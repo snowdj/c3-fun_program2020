@@ -146,7 +146,7 @@ identical(not_allocated, allocated)
 # You try
 
 Base R comes with `letters` and `LETTERS`
-* Make an alphabet of upper/lower case. For example, create "Aa" `paste0(LETTERS[1], letters[1])`
+* Make an alphabet of upper/lower case. For example, create "Aa" with `paste0(LETTERS[1], letters[1])`
 
 * Write a `for` loop for all letters
 
@@ -377,7 +377,7 @@ simulated
 # The `lapply` version
 
 ```{r lapply-sim}
-sim_l <- lapply(seq(1, 5, by = 0.2), function(stdev) rnorm(10, 0, stdev))
+sim_l <- lapply(seq(1, 5, by = 0.2), function(sd) rnorm(10, 0, sd))
 sim_l
 ```
 
@@ -406,6 +406,39 @@ lapply(iris, function(x) {
 	}
 })
 ```
+
+---
+# Add a second condition
+
+.pull-left[
+```{r lapply-conditional2-echo, eval = FALSE}
+lapply(iris, function(x) {
+	if(is.double(x)) {
+		return(mean(x))
+	}
+	else if(is.character(x) | 
+		        is.factor(x)) {
+    return(table(x))
+  }
+})
+```
+
+]
+
+.pull-right[
+```{r lapply-conditional2-eval, echo = FALSE}
+lapply(iris, function(x) {
+	if(is.double(x)) {
+		return(mean(x))
+	}
+	else if(is.character(x) | 
+		        is.factor(x)) {
+    return(table(x))
+  }
+})
+```
+
+]
 
 ---
 # Passing arguments
@@ -437,9 +470,15 @@ str(by_cyl)
 lapply(by_cyl, function(x) mean(x$mpg))
 ```
 
+
 ---
-# But more power
-### Produce separate plots
+# Your turn
+Try splitting the iris dataset by species and calculating the average `Sepal.Length`
+
+
+---
+# Produce separate plots
+### Even {dplyr} needs to loop here
 
 ```{r plots_by_cyl-echo, eval = FALSE}
 lapply(by_cyl, function(x) {
@@ -458,6 +497,10 @@ lapply(by_cyl, function(x) {
 		geom_smooth()
 })
 ```
+
+---
+# Your turn
+Produce separate plots of the relation between `Sepal.Length` and `Sepal.Width`
 
 ---
 # Saving
@@ -486,6 +529,7 @@ plots <- lapply(by_cyl, function(x) {
 --
 ### Specify file names/directory
 ```{r filenames}
+#dir.create(here::here("plots")) # if folder doesn't already exist
 filenames <- here::here("plots", 
                         paste0("cyl", names(by_cyl), ".png"))
 filenames
@@ -503,6 +547,8 @@ for(i in seq_along(plots)) {
 	       height = 8)
 }
 ```
+
+You try!
 
 ---
 # Equivalent with `lapply`
