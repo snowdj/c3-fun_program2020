@@ -436,7 +436,7 @@ map_chr(l, "z", .default = NA_character_)
 unexpected results)
 
 --
-* Because (base) R likes to be inconsistent, here are they `NA` types
+* Because (base) R likes to be inconsistent, here are the `NA` types
 
 .pull-left[
 
@@ -481,7 +481,7 @@ Notes:
 
 * This is not (statistically) the best way to approach this problem
 
-* It's a good illustration, and in my experience there are lots of times with
+* It's a good illustration, and in my experience there are lots of times where
 this approach works well, even if this particular example is a bit artificial
 
 
