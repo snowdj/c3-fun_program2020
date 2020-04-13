@@ -9,9 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Daniel Anderson" />
 
 
-<title>Assignments</title>
+<title>Lab 2</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -377,124 +378,91 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Assignments</h1>
+<h1 class="title toc-ignore">Lab 2</h1>
+<h4 class="author">Daniel Anderson</h4>
+<h4 class="date">4/10/2019</h4>
 
 </div>
 
 
-<div id="labs" class="section level1">
-<h1>Labs</h1>
-<div id="of-your-overall-grade" class="section level4">
-<h4>16% of your overall grade</h4>
-</div>
-<div id="points-total-10-points-each" class="section level4">
-<h4>40 points total; 10 points each</h4>
-<p>You are encouraged to work in partners or teams of up to 4 people on labs. However, should you choose to work in teams, labs <strong>must</strong> be submitted as a shared GitHub repository. I will evaluate the commits made by team members before assigning final points. Each team member should upload a link to the corresponding repo on canvas.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="center"><strong>Lab</strong></th>
-<th align="left"><strong>Topic</strong></th>
-<th align="center"><strong>Assigned</strong></th>
-<th align="center"><strong>Due</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">1</td>
-<td align="left"><a href="lab1.html">Iterations with Base R</a></td>
-<td align="center">4/8/20</td>
-<td align="center">4/15/20</td>
-</tr>
-<tr class="even">
-<td align="center">2</td>
-<td align="left"><a href="lab2.html">Iterations with {purrr}</a></td>
-<td align="center">4/15/20</td>
-<td align="center">4/22/20</td>
-</tr>
-<tr class="odd">
-<td align="center">3</td>
-<td align="left">Writing Functions 1</td>
-<td align="center">5/6/20</td>
-<td align="center">5/13/20</td>
-</tr>
-<tr class="even">
-<td align="center">4</td>
-<td align="left">Writing Functions 2</td>
-<td align="center">5/20/20</td>
-<td align="center">5/27/20</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="midterm" class="section level1">
-<h1>Midterm</h1>
-<div id="of-your-overall-grade-1" class="section level4">
-<h4>24% of your overall grade</h4>
-</div>
-<div id="points-total" class="section level4">
-<h4>60 points total</h4>
-<p><strong>Assigned</strong>: 4/20/20 &amp; 4/22/20</p>
-<p><strong>Due</strong>: 5/4/20</p>
-<p>Two parts:</p>
+<p>This lab will be similar to Lab 1 but will focus specifically on looping with {purrr}.</p>
+<div id="part-a-multiple-models" class="section level3">
+<h3>Part A: Multiple Models</h3>
+<p>Run the code below to load the following dataset.</p>
+<pre class="r"><code>file &lt;- &quot;https://github.com/datalorax/esvis/raw/master/data/benchmarks.rda&quot;
+load(url(file))
+head(benchmarks)</code></pre>
+<pre><code>##      sid cohort     sped  ethnicity     frl     ell season reading math
+## 1 332347      1 Non-Sped Native Am. Non-FRL Non-ELL Winter     208  205
+## 2 400047      1 Non-Sped Native Am.     FRL Non-ELL Spring     212  218
+## 3 402107      1 Non-Sped      White Non-FRL Non-ELL Winter     201  212
+## 4 402547      1 Non-Sped      White Non-FRL Non-ELL   Fall     185  177
+## 5 403047      1     Sped   Hispanic     FRL  Active Winter     179  192
+## 6 403307      1     Sped   Hispanic Non-FRL Non-ELL Winter     189  188</code></pre>
+<p>These data are simulated, but represent individual student scores across seasonal benchmark screenings (administered in the fall, winter, and spring). The variables are as follows:</p>
 <ul>
-<li>Small in-class worksheet to demonstrate knowledge (4/22/20; 10 points)
-<ul>
-<li>Identifying bugs in code</li>
-<li>Multiple choice/fill-in the blank questions</li>
-<li>Free response</li>
-</ul></li>
-<li>Take-home portion to demonstrate ability to write the correct code (assigned 4/20/20; 50 points)
-<ul>
-<li>Write loops to solve problems</li>
-</ul></li>
+<li><code>sid</code>: student identifier</li>
+<li><code>cohort</code>: student cohort</li>
+<li><code>sped</code>: special education status of the student for the given time point</li>
+<li><code>ethnicity</code>: coded race/ethnicity of the student</li>
+<li><code>frl</code>: free or reduced price lunch eligibility for the student for the given time point</li>
+<li><code>ell</code>: English language learner status for the student for the given time point</li>
+<li><code>season</code>: season the assessment was administered</li>
+<li><code>reading</code>: student’s reading score at the given time point</li>
+<li><code>math</code>: student’s mathematics score at the given time point</li>
 </ul>
+<p>Recode season to wave with the following code</p>
+<pre class="r"><code>library(tidyverse)
+
+benchmarks &lt;- benchmarks %&gt;%
+    as_tibble() %&gt;%
+    mutate(wave = case_when(season == &quot;Fall&quot; ~ 0,
+                            season == &quot;Winter&quot; ~ 1,
+                            TRUE ~ 2))</code></pre>
+<ol style="list-style-type: decimal">
+<li><p>Fit a model of the form <code>lm(math ~ wave)</code> for each student.</p></li>
+<li><p>Plot the distribution of slopes. Annotate the plot with a vertical line for the mean.</p></li>
+</ol>
 </div>
+<div id="part-b-star-wars" class="section level3">
+<h3>Part B: Star Wars</h3>
+<p>Install and load the {repurrrsive} package</p>
+<pre class="r"><code>install.packages(&quot;repurrrsive&quot;)
+library(repurrrsive)</code></pre>
+<p>You now should have access to all the data you’ll need for the following.</p>
+<ol style="list-style-type: decimal">
+<li><p>Use the <code>sw_films</code> list to identify how many characters were represented in each film.</p></li>
+<li><p>Use the <code>sw_species</code> list to (a) identify species that have known hair colors and (b) identify what those hair colors are.</p></li>
+</ol>
 </div>
-<div id="final-project" class="section level1">
-<h1>Final Project</h1>
-<div id="of-your-overall-grade-2" class="section level4">
-<h4>60% of your overall grade</h4>
-</div>
-<div id="points-total-1" class="section level4">
-<h4>150 points total</h4>
-<table>
-<thead>
-<tr class="header">
-<th align="left"><strong>Component</strong></th>
-<th align="left"><strong>Points</strong></th>
-<th align="left"><strong>Due</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Groups Finalized</td>
-<td align="left">0</td>
-<td align="left">4/8/20</td>
-</tr>
-<tr class="even">
-<td align="left"><a href="https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#outline_(10_points;_5%)">Outline</a></td>
-<td align="left">10</td>
-<td align="left">4/29/20</td>
-</tr>
-<tr class="odd">
-<td align="left"><a href="https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#draft_data_preparation_script_(20_points)">Draft</a></td>
-<td align="left">20</td>
-<td align="left">5/25/20</td>
-</tr>
-<tr class="even">
-<td align="left"><a href="https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#peer_review_of_data_preparation_script_(20_points)">Peer review</a></td>
-<td align="left">20</td>
-<td align="left">6/1/20</td>
-</tr>
-<tr class="odd">
-<td align="left"><a href="https://uo-datasci-specialization.github.io/c3-fun_program2020/site-syllabus.html#final_product_grading_(100_points)">Product</a></td>
-<td align="left">100</td>
-<td align="left">6/10/20 (11:59 pm)</td>
-</tr>
-</tbody>
-</table>
+<div id="part-c-some-basic-api-calls" class="section level3">
+<h3>Part C: Some basic API calls</h3>
+<p>Many of the list elements have urls for API calls. For example</p>
+<pre class="r"><code>sw_films[[1]]$characters[1]</code></pre>
+<pre><code>## [1] &quot;http://swapi.co/api/people/1/&quot;</code></pre>
+<p>The above provides the url necessary to make an API call for all the information available on the first character in the first film. Unfortunately, this API has since been deprecated. However, we’re going to use essentially equivalent API calls to instead obtain data about pokemon, via <a href="https://pokeapi.co/" class="uri">https://pokeapi.co/</a>. Feel free to visit the website and look around.</p>
+<p>API’s are a way to host databases on the web, and make the data accessible via API calls. We’re going to look at abilities of pokemon. For example to obtain data on the first ability, we could run the following</p>
+<pre class="r"><code>library(httr)
+ability1 &lt;- GET(&quot;https://pokeapi.co/api/v2/ability/1&quot;) %&gt;%
+    content(&quot;parsed&quot;) </code></pre>
+<p>The last digit in <code>"https://pokeapi.co/api/v2/ability/1"</code> is just an index denoting that this is the first ability listed in the database. To obtain data on the third ability, we would instead change our call to <code>"https://pokeapi.co/api/v2/ability/3"</code>.</p>
+<p>If you look at the parsed content (it comes in as JSON data) you will see it is a nested list, just like we worked with above for Star Wars.</p>
+<p>We can identify what the specific ability is for ability 1 with</p>
+<pre class="r"><code>ability1$name</code></pre>
+<pre><code>## [1] &quot;stench&quot;</code></pre>
+<p>and the number of pokemon with this ability with</p>
+<pre class="r"><code>length(ability1$pokemon)</code></pre>
+<pre><code>## [1] 7</code></pre>
+<ol style="list-style-type: decimal">
+<li><p>Use {purrr} to write an API call to obtain data on the first five abilities (note, we’re only using the first five to make the calls go fast, but the code would be essentially equivalent for any number of abilities you wanted to query). Make sure you parse the JSON data to a list.</p></li>
+<li><p>Use the parsed data to create a data frame that has the given ability, and the number of pokemon with that ability.</p></li>
+</ol>
+<div id="bonus-up-to-1-point-extra-credit" class="section level4">
+<h4>Bonus: Up to 1 point extra credit</h4>
+<ol start="2" style="list-style-type: decimal">
+<li>Create a new data frame that lists the names of the pokemon with these specific abilities.</li>
+</ol>
+<p><strong>Hint</strong>: Try to get the name for one pokemon first, then extend out the logic to get all pokemon names. Also, this is really freaking hard so don’t spend too much time on it and don’t worry if you can’t figure it out.</p>
 </div>
 </div>
 
