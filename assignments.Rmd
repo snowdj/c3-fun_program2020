@@ -33,12 +33,12 @@ corresponding repo on canvas.
 
 Two parts: 
 
-* Small in-class worksheet to demonstrate knowledge (4/22/20; 10 points)
+* Small quiz on Canvas to demonstrate knowledge (4/22/20; 10 points)
   + Identifying bugs in code
   + Multiple choice/fill-in the blank questions
   + Free response
   
-* Take-home portion to demonstrate ability to write the correct code (assigned 4/20/20; 50 points)
+* [Take-home portion](midterm.html) to demonstrate ability to write the correct code (assigned 4/20/20; 50 points)
   + Write loops to solve problems
 
 # Final Project

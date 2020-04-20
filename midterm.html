@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Midterm: Take-home</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<script src="highlight-custom.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="website-custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">EDUC 610</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="schedule.html">Slides, Readings, &amp; Schedule</a>
+</li>
+<li>
+  <a href="assignments.html">Assignments</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="site-syllabus.html">Syllabus</a>
+</li>
+<li>
+  <a href="https://github.com/uo-datasci-specialization/c3-fun_program2020">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Midterm: Take-home</h1>
+<h4 class="date">Due: 11:59 PM, 5/6/19</h4>
+
+</div>
+
+
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<p>This work should all be housed in a GitHub repo. Establish the repo and add collaborators if you have any.</p>
+<p>Loading the data takes a minute, so I would suggest you do it once and cache it. This just means including <code>knitr::opts_chunk$set(cache = TRUE)</code> in one of your chunk options.</p>
+<p>The problem with caching is that sometimes results of a later chunk depend upon earlier ones and things can get out of sync. If you make a change and it doesn’t have the result you expect, try clearing the cache and knitting again.</p>
+<p><img src="img/clear_cache.png" /></p>
+<p>If this is confusing, don’t worry about it. Either check in with me or ignore this part and don’t use caching. It will just take a little longer to render your file each time you click “knit”.</p>
+<p>I would also recommend not tracking the cache files. This means adding the cache folder to your <code>.gitignore</code> file. If you initialized your repo with the R <code>.gitignore</code> file this is actually already taken of for you. If not, add <code>/*_cache/</code> to your <code>.gitignore</code>.</p>
+</div>
+<div id="part-a-data" class="section level1">
+<h1>Part A: Data</h1>
+<div id="points" class="section level3">
+<h3>10 points</h3>
+<p>The following function downloads data from the Oregon Department of education website on the number of students who scored in each performance category on the statewide assessment by race/ethnicity for every school in the state. It takes one argument, <code>year</code>, which must be a two digit integer from 15 to 18 (representing the 2014-15 to 2017-18 school years).</p>
+<p><strong>NOTE:</strong> This function uses the <code>glue</code> function from the package of the same name. If you do not already have this package installed, please first install it with <code>install.packages("glue")</code>. It also uses <code>{rio}</code> for the import, which you should already have installed, but if not, install that first too.</p>
+<pre class="r"><code>download_file &lt;- function(year) {
+    link &lt;- glue::glue(&quot;https://www.oregon.gov/ode/educator-resources/assessment/TestResults20{year}/pagr_schools_ela_raceethnicity_{year-1}{year}.xlsx&quot;)
+    rio::import(link, setclass = &quot;tibble&quot;, na = c(&quot;-&quot;, &quot;--&quot;, &quot;*&quot;))
+}</code></pre>
+<ol style="list-style-type: decimal">
+<li>(5 points) Use the function above to download all the data from 2014-15 to each of the past 4 school years and bind it into a single data frame, using a single function (i.e., one line of code). Note, this may take a minute or two to run, depending on your Internet speed.</li>
+</ol>
+<p>Conduct some basic data cleaning to make your data file look like the following.</p>
+<ul>
+<li>Filter for only student groups coded as <code>"White"</code> or <code>"Hispanic/Latino"</code>.</li>
+<li>Select variables related to the number of students in each of the levels (1:4), and not percentages or collapsed levels.</li>
+<li>Remove any row that has missing data in any of the <em>n</em> variables</li>
+</ul>
+<pre><code>## # A tibble: 90,576 x 7
+##    academic_year district   school         student_group grade_level level     n
+##    &lt;chr&gt;         &lt;chr&gt;      &lt;chr&gt;          &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt; &lt;int&gt;
+##  1 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 3     1         2
+##  2 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 3     2         1
+##  3 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 3     3         2
+##  4 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 3     4         1
+##  5 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 6     1         2
+##  6 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 6     2         3
+##  7 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 6     3         2
+##  8 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 6     4         0
+##  9 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 7     1         2
+## 10 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 7     2         2
+## # … with 90,566 more rows</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>(5 points) Collapse (sum) the n across grades and school for each district within each academic year, student group, and level. At the same time, calulate the number of schools (unique schools listed) for each district. Also move your data to a wider format where the student groups become new columns, filled by the district n. Remove districts that did not report numbers for one or both student groups (i.e., drop missing data from the new columns). Your data frame should look like the below</li>
+</ol>
+<pre><code>## # A tibble: 1,948 x 6
+##    academic_year district     n_schools level hispanic_latino white
+##    &lt;chr&gt;         &lt;chr&gt;            &lt;int&gt; &lt;chr&gt;           &lt;int&gt; &lt;int&gt;
+##  1 2014-2015     Adrian SD 61         2 1                   6     8
+##  2 2014-2015     Adrian SD 61         2 2                   6    17
+##  3 2014-2015     Adrian SD 61         2 3                   6    23
+##  4 2014-2015     Adrian SD 61         2 4                   1    22
+##  5 2014-2015     Amity SD 4J          3 1                  19    75
+##  6 2014-2015     Amity SD 4J          3 2                  26    86
+##  7 2014-2015     Amity SD 4J          3 3                  14   101
+##  8 2014-2015     Amity SD 4J          3 4                   3    31
+##  9 2014-2015     Ashland SD 5         6 1                  18    76
+## 10 2014-2015     Ashland SD 5         6 2                  24   141
+## # … with 1,938 more rows</code></pre>
+</div>
+</div>
+<div id="part-b-achievement-gaps" class="section level1">
+<h1>Part B: Achievement gaps</h1>
+<div id="points-1" class="section level3">
+<h3>30 points</h3>
+<p>If you have not already done so, please install the <a href="https://github.com/datalorax/gapr">{gapr}</a> package using the following code</p>
+<pre class="r"><code>remotes::install_github(&quot;datalorax/gapr&quot;)</code></pre>
+<p>The {gapr} package includes, at the moment, one function, <code>estimate_v</code>, which estimates the average difference between two distributions in terms of an effect size when the only data available are counts within bins (for more information, see <a href="https://journals.sagepub.com/doi/10.3102/1076998611411918">Ho &amp; Reardon, 2012</a>). The nice thing about this approach is that we’re able to obtain the effect size of average differences in achievement between two groups of students <em>as if we had the full, student level data</em> even though we just have counts within bins (performance levels).</p>
+<p>The <code>estimate_v</code> function takes 3 arguments in the following order: (1) the data frame including the counts for each group, (2) a character string stating the name of the column with the counts for the reference group, and (3) a character string stating the name of the column with the counts for the focal group.</p>
+<p>To estimate the average achievement difference between students coded Hispanic/Latino versus White for the first school district in the first year in our data, we would run the following</p>
+<pre class="r"><code>library(gapr)
+d[1:4, ] %&gt;% # data source - just first four rows for first district
+  estimate_v(&quot;white&quot;, &quot;hispanic_latino&quot;) # columns for reference/focal groups</code></pre>
+<pre><code>##         auc          v       v_se
+## 1 0.2824054 -0.8141778 0.07283486</code></pre>
+<p>We can see that students coded Hispanic/Latino score, on average, about 0.81 standard deviations below students coded White within this school district.</p>
+<ol style="list-style-type: decimal">
+<li><p>(10 points) Estimate an achievement gap effect size for every school district in the state that reported data on both student groups (i.e., using the data we created above), for each academic year. Note, on my computer this took about 38 seconds. It will likely take a bit longer for you, but shouldn’t take <em>too</em> long. You may get a warning. Just go ahead and ignore that for now.</p></li>
+<li><p>(10 points) The plot below shows the achievement gap estimate for one school district across years. Produce a similar plot to the below for each of the first 100 school districts. Make sure you don’t miss the caption noting the number of schools in the district.</p></li>
+</ol>
+<p>Hint: You need to select unique <em>districts</em>. You may want to try something like the following</p>
+<pre class="r"><code>dists &lt;- unique(v$district)[1:100]
+
+model_list_object %&gt;% 
+  filter(district %in% dists)</code></pre>
+<p><br/></p>
+<p><img src="midterm_files/figure-html/bandon-1.png" width="1440" /></p>
+<ol start="3" style="list-style-type: decimal">
+<li>(10 points) Save the plots into a “plots” directory. Make sure the file names are meaningful.</li>
+</ol>
+<p><strong>HINTS</strong></p>
+<ul>
+<li>You don’t have to use a loop to create the file names (maybe give <code>{glue}</code> a try? Otherwise <code>paste</code> or <code>paste0</code> will work fine).</li>
+<li>When working with the code, limit the number of plots you’re saving to, say, the first five to make sure it works before running it on all plots.</li>
+</ul>
+</div>
+</div>
+
+<p>
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
+<link rel="stylesheet" href="website-custom.css" type="text/css" />
+</p>
+<script src="highlight-custom.js"></script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
