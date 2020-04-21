@@ -80,14 +80,12 @@ not complete, and the student has not contacted the instructor for help or
 visited office hours, it is likely to result is a partial credit score or a 
 zero**. Labs submitted late will be docked by 30% (3 points).
 
-## Midterm (50 points; 20%)
+## Midterm (60 points; 24%)
 As may be obvious from the weekly structure, this course is rather split into
 iterations, and writing/building functions. The final project should incorporate
 both elements (as described below), but we will also have a midterm that 
 focuses primarily on iteration (perhaps with some data type/coercion involved
-as well). More details will be available later in the term, but you are likely
-to be asked to rewrite code to accomplish a similar task using more efficient
-and/or readable approaches. 
+as well). This will include an in-class quiz (10 points) and a take-home project (50 points) which can be completed in groups.
 
 ## Final Project (150 points; 60%)
 

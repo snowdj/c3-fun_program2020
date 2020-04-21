@@ -395,7 +395,7 @@ div.tocify {
 <div id="part-a-data" class="section level1">
 <h1>Part A: Data</h1>
 <div id="points" class="section level3">
-<h3>10 points</h3>
+<h3>20 points</h3>
 <p>The following function downloads data from the Oregon Department of education website on the number of students who scored in each performance category on the statewide assessment by race/ethnicity for every school in the state. It takes one argument, <code>year</code>, which must be a two digit integer from 15 to 18 (representing the 2014-15 to 2017-18 school years).</p>
 <p><strong>NOTE:</strong> This function uses the <code>glue</code> function from the package of the same name. If you do not already have this package installed, please first install it with <code>install.packages("glue")</code>. It also uses <code>{rio}</code> for the import, which you should already have installed, but if not, install that first too.</p>
 <pre class="r"><code>download_file &lt;- function(year) {
@@ -403,7 +403,7 @@ div.tocify {
     rio::import(link, setclass = &quot;tibble&quot;, na = c(&quot;-&quot;, &quot;--&quot;, &quot;*&quot;))
 }</code></pre>
 <ol style="list-style-type: decimal">
-<li>(5 points) Use the function above to download all the data from 2014-15 to each of the past 4 school years and bind it into a single data frame, using a single function (i.e., one line of code). Note, this may take a minute or two to run, depending on your Internet speed.</li>
+<li>(10 points) Use the function above to download all the data from 2014-15 to each of the past 4 school years and bind it into a single data frame, using a single function (i.e., one line of code). Note, this may take a minute or two to run, depending on your Internet speed.</li>
 </ol>
 <p>Conduct some basic data cleaning to make your data file look like the following.</p>
 <ul>
@@ -426,7 +426,7 @@ div.tocify {
 ## 10 2014-2015     Adrian SD… Adrian Elemen… Hispanic/Lat… Grade 7     2         2
 ## # … with 90,566 more rows</code></pre>
 <ol start="2" style="list-style-type: decimal">
-<li>(5 points) Collapse (sum) the n across grades and school for each district within each academic year, student group, and level. At the same time, calulate the number of schools (unique schools listed) for each district. Also move your data to a wider format where the student groups become new columns, filled by the district n. Remove districts that did not report numbers for one or both student groups (i.e., drop missing data from the new columns). Your data frame should look like the below</li>
+<li>(10 points) Collapse (sum) the n across grades and school for each district within each academic year, student group, and level. At the same time, calulate the number of schools (unique schools listed) for each district. Also move your data to a wider format where the student groups become new columns, filled by the district n. Remove districts that did not report numbers for one or both student groups (i.e., drop missing data from the new columns). Your data frame should look like the below</li>
 </ol>
 <pre><code>## # A tibble: 1,948 x 6
 ##    academic_year district     n_schools level hispanic_latino white
