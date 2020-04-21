@@ -109,6 +109,12 @@ for(i in seq_along(by_month)) {
 	mean_ozone1[i] <- mean(by_month[[i]]$Ozone, na.rm = TRUE)
 }
 
+# mean_ozone1[1] <- mean(by_month[[1]]$Ozone, na.rm = TRUE)
+# mean_ozone1[2] <- mean(by_month[[2]]$Ozone, na.rm = TRUE)
+# mean_ozone1[3] <- mean(by_month[[3]]$Ozone, na.rm = TRUE)
+# mean_ozone1[4] <- mean(by_month[[4]]$Ozone, na.rm = TRUE)
+# mean_ozone1[5] <- mean(by_month[[5]]$Ozone, na.rm = TRUE)
+
 # 5
 ## lapply
 mean_ozone2 <- lapply(by_month, function(x) mean(x$Ozone, na.rm = TRUE))
