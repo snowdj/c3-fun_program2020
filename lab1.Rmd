@@ -105,6 +105,9 @@ by_month <- split(airquality, airquality$Month)
 
 # 4
 mean_ozone1 <- rep(NA, length(by_month))
+
+# vector("list", length(by_month)) # create an empty list instead of an atomic vector
+
 for(i in seq_along(by_month)) {
 	mean_ozone1[i] <- mean(by_month[[i]]$Ozone, na.rm = TRUE)
 }
