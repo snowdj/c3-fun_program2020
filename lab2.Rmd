@@ -61,7 +61,17 @@ slopes <- split(benchmarks, benchmarks$sid) %>%
 	map(coef) %>%
 	map_dbl(2)
 
-to_plot <- tibble(sid = names(slopes),
+
+split_df <- split(benchmarks, benchmarks$sid) 
+models <- map(split_df, ~ lm(math ~ wave, data = .x))
+coefs <- map(models, coef) # exactly the same as map(models, ~coef(.x))
+slopes <- map_dbl(coefs, ~.x["wave"])
+
+# also equivalent to line 68
+map_dbl(coefs, "wave")
+map_dbl(coefs, 2)
+
+to_plot <- tibble(sid = names(split_df),
                   slope = slopes)
 
 theme_set(theme_minimal())
@@ -90,6 +100,12 @@ You now should have access to all the data you'll need for the following.
 
 ```{r starwars-answers, include = FALSE}
 library(repurrrsive)
+
+# str(sw_films)
+# film1 <- sw_films[[1]]
+# film1$title
+# map_chr(sw_films, ~.x$title)
+
 titles <- map_chr(sw_films, "title")
 n_char <- map(sw_films, "characters") %>%
 	map_dbl(length) %>%
@@ -97,6 +113,12 @@ n_char <- map(sw_films, "characters") %>%
 
 # Alternative approach
 tibble(film = titles, num_char = n_char)
+
+
+# str(sw_species)
+# first_species <- sw_species[[1]]
+# first_species$hair_colors
+# map_chr(sw_species, ~.x$hair_colors)
 
 tibble(species = map_chr(sw_species, "name"),
        hair = map_chr(sw_species, "hair_colors")) %>%
@@ -142,13 +164,17 @@ length(ability1$pokemon)
 
 ```{r 1c-answer, include = FALSE, eval = FALSE}
 abilities <- paste0("https://pokeapi.co/api/v2/ability/", 1:5)
-pokes_abilities <- map(abilities, GET)
-pokes <- map(pokes_abilities, content, "parsed")
+pokes_abilities <- map(abilities, GET) # equivalent to map(abilities, ~GET(.x))
+pokes <- map(pokes_abilities, content, "parsed") # equivalent to map(pokes_abilities, ~content(.x,"parsed"))
 ```
 
 2. Use the parsed data to create a data frame that has the given ability, and the number of pokemon with that ability. 
 
 ```{r 2c-answer, include = FALSE, eval = FALSE}
+pokes[[3]]$name
+map_chr(pokes, "name")
+map_int(pokes, ~length(.x$pokemon))
+
 pokemon_abilities <- tibble(ability = map_chr(pokes, "name"),
                             n_pokemon = map_dbl(pokes, ~length(.x$pokemon)))
 
@@ -162,6 +188,9 @@ pokemon_abilities <- tibble(ability = map_chr(pokes, "name"),
 
 ```{r 3c-answer, include = FALSE, eval = FALSE}
 ability <- map_chr(pokes, "name")
+# p <- map(pokes, "pokemon")
+# p[[1]][[1]]$pokemon$name
+
 pokemon <- map(pokes, ~map_chr(.x$pokemon, ~.x$pokemon$name))
 
 tibble(ability, pokemon) %>% 
