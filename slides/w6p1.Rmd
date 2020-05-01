@@ -91,12 +91,12 @@ which it sums.
 
 
 --
-* The following are also the same
+* The following are also the same (minus what's being assigned)
 
 ```{r}
 a <- 7
 a
-`<-`(a, 7)
+`<-`(a, 5)
 a
 ```
 
@@ -135,14 +135,14 @@ a(hp ~ drat + wt, data = mtcars)
 
 ---
 # What does this all mean?
-* Anything that carries out ANY operation in R is a function
+* Anything that carries out .b[ANY] operation in R is a function
 
 * Functions are generally, but not always, stored in an object (otherwise
 known as binding the function to a name)
 
 
----
-# Anonymous functions
+--
+### Anonymous functions
 * The function for computing the mean is bound the name `mean`
 
 * When running things through loops, you may often want to apply a function
@@ -171,6 +171,9 @@ funs <- list(
   quadruple = function(x) x * 4
 )
 ```
+
+--
+.r[.ital[This is kind of weird...]]
 
 ---
 ```{r fun-list-eval}
@@ -214,16 +217,59 @@ background-image:url(https://d33wubrfki0l68.cloudfront.net/f0494d020aa517ae7b101
 
 # Remember what {purrr} does
 
+---
+# With `map_df`
+
+```{r map_df_smry, include = FALSE}
+map_df(smry, ~.x(mtcars$mpg))
+map_df(smry, ~.x(mtcars$cyl))
+```
+
+```{r echo = FALSE}
+library(flair)
+decorate("map_df_smry") %>% 
+  flair("mpg", color = "#4f8dde") %>% 
+  flair("cyl", color = "#b54fde")
+```
+
+--
+### What if we wanted this for all columns?
 
 ---
 # Challenge
 * Can you extend the previous looping to supply the summary for every column?
 .b[Hint]: You'll need to make a nested loop (loop each function through each column)
 
+`r countdown::countdown(minutes = 5)`
+
 --
 ```{r smry-all-cols}
 map_df(mtcars, function(col) map_df(smry, ~.x(col)),
        .id = "column")
+```
+
+---
+# Maybe easier
+* Often when you get into nested loops, it's easier to turn (at least) one of the loops into a function.
+
+--
+```{r summarize_col}
+summarize_col <- function(column) {
+  map_df(smry, ~.x(column))
+}
+```
+
+--
+Now we can just loop this function through each column
+
+---
+```{r all-cols, include = FALSE}
+map_df(mtcars, summarize_col, .id = "column")
+```
+
+```{r decorate-all-cols, echo = FALSE}
+decorate("all-cols") %>% 
+  flair("summarize_col", bold = TRUE, color = "#4f8dde")
 ```
 
 ---
@@ -457,16 +503,29 @@ coef(m)["(Intercept)"]
 ---
 # Generalize it
 
-```{r pull-coef1}
+```{r pull-coef-fun, include = FALSE}
 pull_coef <- function(model, coef_name) {
-	coef(model)[coef_name]
+  coef(model)[coef_name]
 }
+```
+
+```{r decorate-pull-coef-fun, echo = FALSE}
+decorate("pull-coef-fun") %>% 
+  flair("coef_name", color = "#4f8dde") %>% 
+  flair("model", color = "#b54fde")
+```
+
+--
+
+```{r pull-coef1}
 mods %>%
 	mutate(intercept = map_dbl(model, pull_coef, "(Intercept)"),
 	       disp      = map_dbl(model, pull_coef, "disp"),
 	       hp        = map_dbl(model, pull_coef, "hp"),
 	       drat      = map_dbl(model, pull_coef, "drat"))
 ```
+
+
 
 ---
 # Make it more flexible
@@ -606,11 +665,18 @@ map_df(df, ~(.x - min(.x, na.rm = TRUE)) /
 ---
 # Create the function
 
-```{r rescale1}
+```{r rescale1, include = FALSE}
 rescale01 <- function(x) {
 	(x - min(x, na.rm = TRUE)) / 
       (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
 }
+```
+
+```{r decorate-rescale1, echo = FALSE}
+decorate("rescale1") %>% 
+  flair("x", color = "#4f8dde") %>%
+  flair("function", color = "#B854D4") %>%
+  flair("TRUE", color = "#B65610")
 ```
 
 --
