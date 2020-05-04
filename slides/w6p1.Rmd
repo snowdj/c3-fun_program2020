@@ -273,6 +273,23 @@ decorate("all-cols") %>%
 ```
 
 ---
+# Wrap the whole thing in a function
+
+```{r df-function}
+summarize_df <- function(df) {
+  map_df(df, summarize_col, .id = "column")
+}
+```
+
+--
+```{r summarize-airquality}
+summarize_df(airquality)
+```
+
+--
+Notice the missing data. Why? What should we do?
+
+---
 class: inverse center middle
 # Function components
 

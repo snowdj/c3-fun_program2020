@@ -162,7 +162,7 @@ table(map2_dbl(1:500, 1:500, `+`) &gt; 0)
 ```
 ## 
 ## FALSE  TRUE 
-##     2   498
+##     8   492
 ```
 
 ```r
@@ -358,7 +358,7 @@ background-image:url(https://d33wubrfki0l68.cloudfront.net/f0494d020aa517ae7b101
 * Can you extend the previous looping to supply the summary for every column?
 .b[Hint]: You'll need to make a nested loop (loop each function through each column)
 
-<div class="countdown" id="timer_5eaca34f" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_5eb0472a" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -425,6 +425,37 @@ Now we can just loop this function through each column
 ## 11 carb      32      0      32   2.8125     1.615200
 
 ```
+
+---
+# Wrap the whole thing in a function
+
+
+```r
+summarize_df &lt;- function(df) {
+  map_df(df, summarize_col, .id = "column")
+}
+```
+
+--
+
+```r
+summarize_df(airquality)
+```
+
+```
+## # A tibble: 6 x 6
+##   column      n n_miss n_valid      mean        sd
+##   &lt;chr&gt;   &lt;int&gt;  &lt;int&gt;   &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Ozone     153     37     116 NA        NA       
+## 2 Solar.R   153      7     146 NA        NA       
+## 3 Wind      153      0     153  9.957516  3.523001
+## 4 Temp      153      0     153 77.88235   9.465270
+## 5 Month     153      0     153  6.993464  1.416522
+## 6 Day       153      0     153 15.80392   8.864520
+```
+
+--
+Notice the missing data. Why? What should we do?
 
 ---
 class: inverse center middle
