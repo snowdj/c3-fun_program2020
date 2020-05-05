@@ -413,7 +413,7 @@ c(NA, 3, NA, 4, NA, NA, NA)</code></pre>
 <li>Turn the following three lines of code into three different functions. Make sure to give them meaningful names. Test the functions to make sure they provide the expected output.</li>
 </ol>
 <pre class="r"><code># Count number of missing elements in a vector
-mean(is.na(airquality$Ozone))
+sum(is.na(airquality$Ozone))
 
 # Proportional representation of each level (unique element) in a vector
 purrr::map_dbl(split(mtcars$cyl, mtcars$cyl), length) / length(mtcars$cyl)
