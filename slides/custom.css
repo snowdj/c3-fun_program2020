@@ -31,6 +31,14 @@
   font-weight: 400;
 }
 
+.remark-code-line-highlighted .hljs-comment {
+  color: #c2ebc2 !important;
+}
+
+.remark-code-line-highlighted .hljs-number {
+  color: #143913 !important;
+}
+
 .bolder { font-weight: 900; }
 
 .major-emph-green {
