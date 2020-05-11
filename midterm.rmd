@@ -237,7 +237,7 @@ plots <- v %>%
   )
 )
 
-v
+plots
 ```
 
 3. (10 points) Save the plots into a "plots" directory. Make sure the file names are meaningful.
