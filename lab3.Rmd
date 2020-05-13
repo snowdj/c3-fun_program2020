@@ -1,0 +1,188 @@
+---
+title: "Lab 3"
+author: "Daniel Anderson"
+date: "Assigned: 5/6/20; Due 5/13/20"
+output:
+  html_document: 
+    toc: True
+    toc_float: true
+    theme: "journal"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This lab focuses on writing basic functions.
+
+### Part A: Foundations
+1. Briefly name and describe the three fundamental components of a function.
+
+```{r ans1a, include = FALSE}
+# 1. Formals - The arguments supplied to the function
+# 2. Body - What the function actually does, including the use of the formals
+# 3. Environment - Where the function "lives", which is important for scoping.
+```
+
+2. Describe three different ways functions can be stored/applied and an example
+of when you might want to use each version.
+
+```{r ans2b, include = FALSE}
+# anonymous functions are often used in loops, usually functionals like
+# `purrr::map` or lapply.
+
+# Functions are usually bound to a name and applied like we typically see
+# functions, with the name preceding parentheses (e.g., `lm()`)
+
+# Functions can also be bound to names within lists, which can be useful if you
+# want to loop a set of functions through something, rather than looping a
+# single function through a vector. In other words, the vector you are looping
+# through is the list where each element of the list is a function
+```
+
+### Part B: Applied practice
+
+The mean is defined as
+
+$$
+\frac{\sum_{i=1}^n{x_i}}{n}
+$$
+
+where $x_i$ represents each element in a generic vector, $x$, $\sum$ represents the summation of these elements, and $n$ represents the total number of elements in $x$. In other words, sum and divide by the number included.
+
+1. Write a function to calculate the mean that removes missing data before
+conducting the calculation. You may not use `base::mean` or any similar function that conducts a mean calculation.
+
+```{r ans1, include = FALSE}
+my_mean <- function(x) {
+	if(any(is.na(x))) {
+		tot_na <- sum(is.na(x))
+		warning(tot_na, " observations removed due to missingness")
+		x <- na.omit(x)
+	}
+	sum(x) / length(x)
+}
+```
+
+2. Test your function to make sure it (a) provides the expected results, and (b)
+gives identical output to `base::mean` when `na.rm = TRUE`. Make sure that you test your data against a vector that has missing data.
+
+```{r ans2, include = FALSE}
+my_mean(mtcars$mpg)
+mean(mtcars$mpg)
+
+my_mean(airquality$Ozone)
+mean(airquality$Ozone)
+mean(airquality$Ozone, na.rm = TRUE)
+```
+
+3. Write a function that takes two vectors of the same length and returns
+the total number of instances where the value is `NA` for both vectors. For
+example, given the following two vectors
+
+```{r vects, eval = FALSE}
+c(1, NA, NA, 3, 3, 9, NA)
+c(NA, 3, NA, 4, NA, NA, NA)
+```
+
+The function should return a value of `2`, because the vectors are both `NA` at
+the third and seventh locations. 
+
+Test that the function works as expected on two new vectors (i.e., any two vectors that are not the two listed above).
+
+```{r ans3, include = FALSE}
+a <- c(1, NA, NA, 3, 3, 9, NA)
+b <- c(NA, 3, NA, 4, NA, NA, NA)
+
+sum(is.na(a) & is.na(b))
+
+both_na <- function(x, y) {
+	sum(is.na(x) & is.na(y))	
+}
+both_na(a, b)
+both_na(c(rep(NA, 7), rnorm(3)),
+        c(rep(NA, 4), rnorm(6)))
+```
+
+
+4. Turn the following three lines of code into three different functions. Make sure to give them meaningful names. 
+Test the functions to make sure they provide the expected output.
+
+```{r practice, eval = FALSE}
+# Count number of missing elements in a vector
+sum(is.na(airquality$Ozone))
+
+# Proportional representation of each level (unique element) in a vector
+purrr::map_dbl(split(mtcars$cyl, mtcars$cyl), length) / length(mtcars$cyl)
+
+# normalize or z-score a vector so the mean is zero and sd is one
+(mtcars$mpg - mean(mtcars$mpg, na.rm = TRUE)) / 
+  sd(mtcars$mpg, na.rm = TRUE) 
+```
+
+```{r ans4, include = FALSE}
+prop_missing <- function(x) {
+	mean(is.na(x))
+}
+prop_missing(c(rep(NA, 25), rnorm(75)))
+prop_missing(c(rep(NA, 42), rnorm(58)))
+
+prop_cat <- function(cat_v) {
+	purrr::map_dbl(split(cat_v, cat_v), length) / length(cat_v)
+}
+prop_cat(rep(letters[1:4], each = 25))
+prop_cat(c(rep(letters[1], 50), rep(letters[4:5], each = 25)))
+
+
+standardize <- function(x) {
+	if(any(is.na(x))) {
+		tot_na <- sum(is.na(x))
+		warning(paste(tot_na, "observations removed due to missingness"))
+		x <- na.omit(x)
+	}
+	(x - mean(x)) / sd(x) 
+}
+test_standardize <- cbind(standardize(airquality$Ozone), 
+                          na.omit(scale(airquality$Ozone)))
+identical(test_standardize[ ,1], test_standardize[ ,2])
+```
+
+5. Write a function that takes a data frame as its input and returns a data
+frame with only the numeric columns.
+
+```{r ans5, include = FALSE}
+df_numeric <- function(df, as_tibble = TRUE) {
+	num <- purrr::map_lgl(df, is.numeric)
+	
+	if(as_tibble) {
+		return(tibble::as_tibble(df[ ,num]))
+	}
+	df[ ,num]
+}
+df_numeric(iris)
+df_numeric(iris, as_tibble = FALSE)
+```
+
+6. Write a function that uses the function you wrote in Question 5, and returns
+a data frame with the mean and standard deviation of each numeric column.
+
+```{r ans6, include = FALSE}
+df_summary <- function(df, as_tibble = TRUE) {
+	df_num <- df_numeric(df)
+	means <- purrr::map_dbl(df_num, my_mean)
+	sds <- purrr::map_dbl(df_num, sd, na.rm = TRUE)
+
+	if(as_tibble) {
+		tbl <- tibble::tibble(variable = names(df_num),
+		                      mean = means,
+		                      sd = sds)
+	} else {
+		tbl <- data.frame(variable = names(df_num),
+		                  mean = means,
+		                  sd = sds)
+	}
+	tbl
+}
+df_summary(iris)
+df_summary(forcats::gss_cat)
+```
