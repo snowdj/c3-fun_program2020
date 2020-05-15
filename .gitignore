@@ -1,6 +1,6 @@
 .DS_Store
 nopublish/*
-shiny-examples/*
+
 # proprietary data
 data/pfiles18/*
 
